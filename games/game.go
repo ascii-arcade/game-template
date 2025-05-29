@@ -26,14 +26,6 @@ func New() *Game {
 	return game
 }
 
-func (s *Game) LockState() {
-	s.mu.Lock()
-}
-
-func (s *Game) UnlockState() {
-	s.mu.Unlock()
-}
-
 func (s *Game) OrderedPlayers() []*Player {
 	var players []*Player
 	for _, p := range s.Players {
