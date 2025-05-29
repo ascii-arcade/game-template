@@ -8,7 +8,7 @@ import (
 	"github.com/charmbracelet/wish/bubbletea"
 
 	"github.com/ascii-arcade/wish-template/board"
-	"github.com/ascii-arcade/wish-template/game"
+	"github.com/ascii-arcade/wish-template/games"
 	"github.com/ascii-arcade/wish-template/menu"
 	"github.com/ascii-arcade/wish-template/messages"
 )
@@ -81,8 +81,8 @@ func TeaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 }
 
 func (m *rootModel) newGame() error {
-	newGame := game.New()
-	game.Games[newGame.Code] = newGame
+	newGame := games.New()
+	games.Games[newGame.Code] = newGame
 	m.board.Game = newGame
 	return m.joinGame(newGame.Code)
 }
@@ -91,16 +91,16 @@ func (m *rootModel) joinGame(code string) error {
 	updateCh := make(chan int)
 	m.board.UpdateCh = updateCh
 
-	g, ok := game.Get(code)
+	game, ok := games.Get(code)
 	if !ok {
 		return errors.New("game does not exist")
 	}
-	m.board.Game = g
+	m.board.Game = game
 
-	player := g.AddPlayer(updateCh)
+	player := game.AddPlayer(updateCh)
 	m.board.Player = player
 
-	g.Refresh()
+	game.Refresh()
 
 	return nil
 }

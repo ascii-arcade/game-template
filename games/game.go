@@ -1,4 +1,4 @@
-package game
+package games
 
 import (
 	"sort"
@@ -14,14 +14,6 @@ type Game struct {
 
 	mu      sync.Mutex
 	Players map[string]*Player
-}
-
-type Player struct {
-	Name      string
-	Count     int
-	TurnOrder int
-
-	UpdateChan chan int
 }
 
 func New() *Game {

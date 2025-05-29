@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ascii-arcade/wish-template/game"
+	"github.com/ascii-arcade/wish-template/games"
 	"github.com/ascii-arcade/wish-template/messages"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -16,8 +16,8 @@ type Model struct {
 	Height   int
 	Renderer *lipgloss.Renderer
 
-	Player   *game.Player
-	Game     *game.Game
+	Player   *games.Player
+	Game     *games.Game
 	UpdateCh chan int
 }
 
@@ -63,14 +63,14 @@ func (m Model) View() string {
 		counts += fmt.Sprintf("%s: %d\n", p.Name, p.Count)
 	}
 
-	return m.Renderer.NewStyle().Render(fmt.Sprintf("You are %s", m.Player)) +
+	return m.Renderer.NewStyle().Render(fmt.Sprintf("You are %s", m.Player.Name)) +
 		"\n\n" + counts +
 		"\n\n'" + m.Game.Code + "'" +
 		"\n\n" + m.Renderer.NewStyle().Render("Press 'q' to quit")
 }
 
-func (m *Model) gameState() *game.Game {
-	game, exists := game.Games[m.Game.Code]
+func (m *Model) gameState() *games.Game {
+	game, exists := games.Games[m.Game.Code]
 	if !exists {
 		log.Fatal("Game does not exist", "code", m.Game.Code)
 	}
