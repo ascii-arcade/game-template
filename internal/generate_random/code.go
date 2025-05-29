@@ -2,7 +2,7 @@ package generate_random
 
 import (
 	"crypto/rand"
-	"encoding/hex"
+	"math/big"
 )
 
 func Code(existing []string) string {
@@ -12,14 +12,20 @@ func Code(existing []string) string {
 	}
 
 	for {
-		b := make([]byte, 6)
-		_, err := rand.Read(b)
-		if err != nil {
-			continue
+		b := make([]byte, 7)
+		letters := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		for i := range b {
+			if i == 3 {
+				b[i] = '-'
+				continue
+			}
+			num, err := rand.Int(rand.Reader, big.NewInt(int64(len(letters))))
+			if err != nil {
+				continue
+			}
+			b[i] = letters[num.Int64()]
 		}
-		code := hex.EncodeToString(b)[:6]
-		if _, found := exists[code]; !found {
-			return code
-		}
+		code := string(b)
+		return code
 	}
 }
