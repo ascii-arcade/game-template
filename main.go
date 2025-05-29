@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ascii-arcade/wish-template/root"
+	"github.com/ascii-arcade/wish-template/app"
 	"github.com/charmbracelet/log"
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish"
@@ -28,7 +28,7 @@ func main() {
 		wish.WithAddress(net.JoinHostPort(host, port)),
 		wish.WithHostKeyPath(".ssh/id_ed25519"),
 		wish.WithMiddleware(
-			bubbletea.Middleware(root.TeaHandler),
+			bubbletea.Middleware(app.TeaHandler),
 			activeterm.Middleware(),
 			logging.Middleware(),
 		),
