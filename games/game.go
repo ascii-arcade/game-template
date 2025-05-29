@@ -61,14 +61,6 @@ func (s *Game) withLock(fn func()) {
 	fn()
 }
 
-func (s *Game) Count(pName string) {
-	s.withLock(func() {
-		if player, exists := s.Players[pName]; exists {
-			player.Count++
-		}
-	})
-}
-
 func (s *Game) AddPlayer(updateChan chan struct{}) *Player {
 	var player *Player
 	s.withLock(func() {
