@@ -8,11 +8,11 @@ import (
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish/bubbletea"
 
-	"github.com/ascii-arcade/wish/internal/board"
-	"github.com/ascii-arcade/wish/internal/game"
-	generateRandom "github.com/ascii-arcade/wish/internal/generate_random"
-	"github.com/ascii-arcade/wish/internal/menu"
-	"github.com/ascii-arcade/wish/internal/messages"
+	"github.com/ascii-arcade/wish-template/internal/board"
+	"github.com/ascii-arcade/wish-template/internal/game"
+	generateRandom "github.com/ascii-arcade/wish-template/internal/generate_random"
+	"github.com/ascii-arcade/wish-template/internal/menu"
+	"github.com/ascii-arcade/wish-template/internal/messages"
 )
 
 type rootModel struct {

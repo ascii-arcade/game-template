@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ascii-arcade/wish/internal/root"
+	"github.com/ascii-arcade/wish-template/internal/root"
 	"github.com/charmbracelet/log"
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish"

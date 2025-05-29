@@ -1,4 +1,4 @@
-module github.com/ascii-arcade/wish
+module github.com/ascii-arcade/wish-template
 
 go 1.24.1
 
