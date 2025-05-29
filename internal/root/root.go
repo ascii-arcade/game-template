@@ -8,8 +8,8 @@ import (
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish/bubbletea"
 
+	"github.com/ascii-arcade/wish/internal/board"
 	"github.com/ascii-arcade/wish/internal/game"
-	gameView "github.com/ascii-arcade/wish/internal/game_view"
 	generateRandom "github.com/ascii-arcade/wish/internal/generate_random"
 	"github.com/ascii-arcade/wish/internal/menu"
 	"github.com/ascii-arcade/wish/internal/messages"
@@ -18,7 +18,7 @@ import (
 type rootModel struct {
 	active tea.Model
 	menu   menu.Model
-	game   gameView.Model
+	board  board.Model
 }
 
 func (m rootModel) Init() tea.Cmd {
@@ -30,8 +30,8 @@ func (m rootModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case messages.SwitchToMenu:
 		m.active = m.menu
 	case messages.SwitchToGame:
-		m.active = m.game
-		m.game.Init()
+		m.active = m.board
+		m.board.Init()
 	}
 
 	var cmd tea.Cmd
@@ -51,7 +51,7 @@ func TeaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 	name := generateRandom.Name()
 
 	m := rootModel{
-		game: gameView.Model{
+		board: board.Model{
 			Player:   name,
 			Term:     pty.Term,
 			Width:    pty.Window.Width,
@@ -89,8 +89,8 @@ func (m *rootModel) newGame() error {
 
 func (m *rootModel) joinGame(code string) error {
 	updateCh := make(chan int)
-	m.game.UpdateCh = updateCh
-	m.game.GameCode = code
+	m.board.UpdateCh = updateCh
+	m.board.GameCode = code
 
 	state, exists := game.Games[code]
 	if !exists {
@@ -98,8 +98,8 @@ func (m *rootModel) joinGame(code string) error {
 	}
 
 	state.AddClient(updateCh)
-	state.Players[m.game.Player] = &game.Player{
-		Name:      m.game.Player,
+	state.Players[m.board.Player] = &game.Player{
+		Name:      m.board.Player,
 		TurnOrder: len(state.Players) + 1,
 	}
 
