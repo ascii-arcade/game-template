@@ -1,4 +1,4 @@
-package root
+package app
 
 import (
 	"errors"
@@ -13,17 +13,17 @@ import (
 	"github.com/ascii-arcade/wish-template/messages"
 )
 
-type rootModel struct {
+type Model struct {
 	active tea.Model
 	menu   menu.Model
 	board  board.Model
 }
 
-func (m rootModel) Init() tea.Cmd {
+func (m Model) Init() tea.Cmd {
 	return m.active.Init()
 }
 
-func (m rootModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case messages.SwitchViewMsg:
 		m.active = msg.Model
@@ -58,7 +58,7 @@ func (m rootModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m rootModel) View() string {
+func (m Model) View() string {
 	return m.active.View()
 }
 
@@ -66,7 +66,7 @@ func TeaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 	pty, _, _ := s.Pty()
 	renderer := bubbletea.MakeRenderer(s)
 
-	m := rootModel{
+	m := Model{
 		board: board.Model{
 			Term:     pty.Term,
 			Width:    pty.Window.Width,
@@ -80,14 +80,14 @@ func TeaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 	return m, []tea.ProgramOption{tea.WithAltScreen()}
 }
 
-func (m *rootModel) newGame() error {
+func (m *Model) newGame() error {
 	newGame := games.New()
 	games.Games[newGame.Code] = newGame
 	m.board.Game = newGame
 	return m.joinGame(newGame.Code)
 }
 
-func (m *rootModel) joinGame(code string) error {
+func (m *Model) joinGame(code string) error {
 	updateCh := make(chan struct{})
 	m.board.UpdateCh = updateCh
 
