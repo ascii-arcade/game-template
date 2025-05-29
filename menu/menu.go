@@ -1,6 +1,8 @@
 package menu
 
 import (
+	"strings"
+
 	"github.com/ascii-arcade/wish-template/messages"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -64,7 +66,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			case tea.KeyEnter:
 				if len(m.gameCodeInput.Value()) == 7 {
-					return m, func() tea.Msg { return messages.JoinGame{GameCode: m.gameCodeInput.Value()} }
+					code := strings.ToUpper(m.gameCodeInput.Value())
+					return m, func() tea.Msg { return messages.JoinGame{GameCode: code} }
 				}
 			default:
 				val := m.gameCodeInput.Value()
