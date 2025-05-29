@@ -69,6 +69,5 @@ func (s *Game) RemoveClient(ch chan int, player string) {
 
 	if len(s.Players) == 0 {
 		delete(Games, player)
-		return
 	}
 }
