@@ -11,13 +11,13 @@ import (
 )
 
 type Model struct {
-	Player   string
 	Term     string
 	Width    int
 	Height   int
 	Renderer *lipgloss.Renderer
 
-	GameCode string
+	Player   *game.Player
+	Game     *game.Game
 	UpdateCh chan int
 }
 
@@ -48,9 +48,9 @@ func (m *Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 	switch msg.String() {
 	case "a":
-		game.Count(m.Player)
+		game.Count(m.Player.Name)
 	case "q", "ctrl+c":
-		game.RemovePlayer(m.Player)
+		game.RemovePlayer(m.Player.Name)
 		return m, tea.Quit
 	}
 
@@ -65,14 +65,14 @@ func (m Model) View() string {
 
 	return m.Renderer.NewStyle().Render(fmt.Sprintf("You are %s", m.Player)) +
 		"\n\n" + counts +
-		"\n\n'" + m.GameCode + "'" +
+		"\n\n'" + m.Game.Code + "'" +
 		"\n\n" + m.Renderer.NewStyle().Render("Press 'q' to quit")
 }
 
 func (m *Model) gameState() *game.Game {
-	game, exists := game.Games[m.GameCode]
+	game, exists := game.Games[m.Game.Code]
 	if !exists {
-		log.Fatal("Game does not exist", "code", m.GameCode)
+		log.Fatal("Game does not exist", "code", m.Game.Code)
 	}
 	return game
 }

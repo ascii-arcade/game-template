@@ -9,7 +9,6 @@ import (
 
 	"github.com/ascii-arcade/wish-template/board"
 	"github.com/ascii-arcade/wish-template/game"
-	generateRandom "github.com/ascii-arcade/wish-template/generate_random"
 	"github.com/ascii-arcade/wish-template/menu"
 	"github.com/ascii-arcade/wish-template/messages"
 )
@@ -83,31 +82,26 @@ func TeaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 }
 
 func (m *rootModel) newGame() error {
-	code := generateRandom.Code([]string{})
-	game.Games[code] = game.NewGame()
-	err := m.joinGame(code)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	newGame := game.New()
+	game.Games[newGame.Code] = newGame
+	m.board.Game = newGame
+	return m.joinGame(newGame.Code)
 }
 
 func (m *rootModel) joinGame(code string) error {
 	updateCh := make(chan int)
 	m.board.UpdateCh = updateCh
-	m.board.GameCode = code
 
-	state, exists := game.Games[code]
-	if !exists {
+	g, ok := game.Get(code)
+	if !ok {
 		return errors.New("game does not exist")
 	}
+	m.board.Game = g
 
-	player := state.AddPlayer(updateCh)
-	m.board.Player = player.Name
+	player := g.AddPlayer(updateCh)
+	m.board.Player = player
 
-	state.Refresh()
+	g.Refresh()
 
 	return nil
 }

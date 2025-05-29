@@ -10,6 +10,8 @@ import (
 var Games = make(map[string]*Game)
 
 type Game struct {
+	Code string
+
 	mu      sync.Mutex
 	Players map[string]*Player
 }
@@ -22,10 +24,14 @@ type Player struct {
 	UpdateChan chan int
 }
 
-func NewGame() *Game {
-	return &Game{
+func New() *Game {
+	game := &Game{
+		Code:    generaterandom.Code(),
 		Players: make(map[string]*Player),
 	}
+	Games[game.Code] = game
+
+	return game
 }
 
 func (s *Game) LockState() {
@@ -65,6 +71,11 @@ func (s *Game) Count(pName string) {
 	if player, exists := s.Players[pName]; exists {
 		player.Count++
 	}
+}
+
+func Get(code string) (*Game, bool) {
+	game, exists := Games[code]
+	return game, exists
 }
 
 func (s *Game) AddPlayer(updateChan chan int) *Player {
