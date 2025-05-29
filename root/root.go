@@ -7,11 +7,11 @@ import (
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish/bubbletea"
 
-	"github.com/ascii-arcade/wish-template/internal/board"
-	"github.com/ascii-arcade/wish-template/internal/game"
-	generateRandom "github.com/ascii-arcade/wish-template/internal/generate_random"
-	"github.com/ascii-arcade/wish-template/internal/menu"
-	"github.com/ascii-arcade/wish-template/internal/messages"
+	"github.com/ascii-arcade/wish-template/board"
+	"github.com/ascii-arcade/wish-template/game"
+	generateRandom "github.com/ascii-arcade/wish-template/generate_random"
+	"github.com/ascii-arcade/wish-template/menu"
+	"github.com/ascii-arcade/wish-template/messages"
 )
 
 type rootModel struct {

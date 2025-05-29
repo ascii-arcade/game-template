@@ -1,7 +1,7 @@
 package menu
 
 import (
-	"github.com/ascii-arcade/wish-template/internal/messages"
+	"github.com/ascii-arcade/wish-template/messages"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ascii-arcade/wish-template/internal/game"
-	"github.com/ascii-arcade/wish-template/internal/messages"
+	"github.com/ascii-arcade/wish-template/game"
+	"github.com/ascii-arcade/wish-template/messages"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
