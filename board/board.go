@@ -18,7 +18,7 @@ type Model struct {
 
 	Player   *games.Player
 	Game     *games.Game
-	UpdateCh chan int
+	UpdateCh chan struct{}
 }
 
 func (m Model) Init() tea.Cmd {
@@ -77,9 +77,8 @@ func (m *Model) gameState() *games.Game {
 	return game
 }
 
-func waitForRefreshSignal(ch chan int) tea.Cmd {
+func waitForRefreshSignal(ch chan struct{}) tea.Cmd {
 	return func() tea.Msg {
-		v := <-ch
-		return messages.RefreshGame(v)
+		return messages.RefreshGame(<-ch)
 	}
 }

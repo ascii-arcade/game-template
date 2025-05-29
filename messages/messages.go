@@ -5,10 +5,8 @@ import (
 )
 
 type (
-	SwitchViewMsg struct {
-		Model tea.Model
-	}
-	NewGame     struct{}
-	JoinGame    struct{ GameCode string }
-	RefreshGame int
+	SwitchViewMsg struct{ Model tea.Model }
+	NewGame       struct{}
+	JoinGame      struct{ GameCode string }
+	RefreshGame   struct{}
 )

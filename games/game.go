@@ -51,7 +51,7 @@ func (s *Game) Refresh() {
 	defer s.mu.Unlock()
 	for _, p := range s.Players {
 		select {
-		case p.UpdateChan <- 0:
+		case p.UpdateChan <- struct{}{}:
 		default:
 		}
 	}
@@ -70,7 +70,7 @@ func Get(code string) (*Game, bool) {
 	return game, exists
 }
 
-func (s *Game) AddPlayer(updateChan chan int) *Player {
+func (s *Game) AddPlayer(updateChan chan struct{}) *Player {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 

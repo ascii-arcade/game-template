@@ -5,5 +5,5 @@ type Player struct {
 	Count     int
 	TurnOrder int
 
-	UpdateChan chan int
+	UpdateChan chan struct{}
 }
