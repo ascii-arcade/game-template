@@ -77,14 +77,12 @@ func TeaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 
 func (m *Model) newGame() error {
 	newGame := games.New()
-	games.Games[newGame.Code] = newGame
 	m.board.Game = newGame
 	return m.joinGame(newGame.Code)
 }
 
 func (m *Model) joinGame(code string) error {
 	updateCh := make(chan struct{})
-	m.board.UpdateCh = updateCh
 
 	game, ok := games.Get(code)
 	if !ok {
@@ -94,8 +92,6 @@ func (m *Model) joinGame(code string) error {
 
 	player := game.AddPlayer(updateCh)
 	m.board.Player = player
-
-	game.Refresh()
 
 	return nil
 }

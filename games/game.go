@@ -7,7 +7,7 @@ import (
 	generaterandom "github.com/ascii-arcade/wish-template/generate_random"
 )
 
-var Games = make(map[string]*Game)
+var games = make(map[string]*Game)
 
 type Game struct {
 	Code string
@@ -21,17 +21,14 @@ func New() *Game {
 		Code:    generaterandom.Code(),
 		Players: make(map[string]*Player),
 	}
-	Games[game.Code] = game
+	games[game.Code] = game
 
 	return game
 }
 
-func (s *Game) LockState() {
-	s.mu.Lock()
-}
-
-func (s *Game) UnlockState() {
-	s.mu.Unlock()
+func Get(code string) (*Game, bool) {
+	game, exists := games[code]
+	return game, exists
 }
 
 func (s *Game) OrderedPlayers() []*Player {
@@ -46,9 +43,7 @@ func (s *Game) OrderedPlayers() []*Player {
 	return players
 }
 
-func (s *Game) Refresh() {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+func (s *Game) refresh() {
 	for _, p := range s.Players {
 		select {
 		case p.UpdateChan <- struct{}{}:
@@ -57,44 +52,46 @@ func (s *Game) Refresh() {
 	}
 }
 
-func (s *Game) Count(pName string) {
+func (s *Game) withLock(fn func()) {
 	s.mu.Lock()
-	defer s.mu.Unlock()
-	if player, exists := s.Players[pName]; exists {
-		player.Count++
-	}
-}
-
-func Get(code string) (*Game, bool) {
-	game, exists := Games[code]
-	return game, exists
+	defer func() {
+		s.refresh()
+		s.mu.Unlock()
+	}()
+	fn()
 }
 
 func (s *Game) AddPlayer(updateChan chan struct{}) *Player {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	var player *Player
+	s.withLock(func() {
+		maxTurnOrder := 0
+		for _, p := range s.Players {
+			if p.TurnOrder > maxTurnOrder {
+				maxTurnOrder = p.TurnOrder
+			}
+		}
+		player = &Player{
+			Name:       generaterandom.Name(),
+			Count:      0,
+			TurnOrder:  maxTurnOrder + 1,
+			UpdateChan: updateChan,
+		}
 
-	player := &Player{
-		Name:       generaterandom.Name(),
-		Count:      0,
-		TurnOrder:  len(s.Players),
-		UpdateChan: updateChan,
-	}
+		s.Players[player.Name] = player
+	})
 
-	s.Players[player.Name] = player
 	return player
 }
 
 func (s *Game) RemovePlayer(playerName string) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.withLock(func() {
+		if player, exists := s.Players[playerName]; exists {
+			close(player.UpdateChan)
+			delete(s.Players, playerName)
 
-	if player, exists := s.Players[playerName]; exists {
-		close(player.UpdateChan)
-		delete(s.Players, playerName)
-
-		if len(s.Players) == 0 {
-			delete(Games, playerName)
+			if len(s.Players) == 0 {
+				delete(games, playerName)
+			}
 		}
-	}
+	})
 }
