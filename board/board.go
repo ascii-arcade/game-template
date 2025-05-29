@@ -77,7 +77,7 @@ func (m Model) View() string {
 }
 
 func (m *Model) gameState() *games.Game {
-	game, exists := games.Games[m.Game.Code]
+	game, exists := games.Get(m.Game.Code)
 	if !exists {
 		log.Fatal("Game does not exist", "code", m.Game.Code)
 	}

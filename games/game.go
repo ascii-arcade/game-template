@@ -7,7 +7,7 @@ import (
 	generaterandom "github.com/ascii-arcade/wish-template/generate_random"
 )
 
-var Games = make(map[string]*Game)
+var games = make(map[string]*Game)
 
 type Game struct {
 	Code string
@@ -21,7 +21,7 @@ func New() *Game {
 		Code:    generaterandom.Code(),
 		Players: make(map[string]*Player),
 	}
-	Games[game.Code] = game
+	games[game.Code] = game
 
 	return game
 }
@@ -58,7 +58,7 @@ func (s *Game) Count(pName string) {
 }
 
 func Get(code string) (*Game, bool) {
-	game, exists := Games[code]
+	game, exists := games[code]
 	return game, exists
 }
 
@@ -86,7 +86,7 @@ func (s *Game) RemovePlayer(playerName string) {
 		delete(s.Players, playerName)
 
 		if len(s.Players) == 0 {
-			delete(Games, playerName)
+			delete(games, playerName)
 		}
 	}
 }
