@@ -83,7 +83,6 @@ func (m *Model) newGame() error {
 
 func (m *Model) joinGame(code string) error {
 	updateCh := make(chan struct{})
-	m.board.UpdateCh = updateCh
 
 	game, ok := games.Get(code)
 	if !ok {

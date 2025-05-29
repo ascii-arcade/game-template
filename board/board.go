@@ -15,9 +15,8 @@ type Model struct {
 	Height   int
 	renderer *lipgloss.Renderer
 
-	Player   *games.Player
-	Game     *games.Game
-	UpdateCh chan struct{}
+	Player *games.Player
+	Game   *games.Game
 }
 
 func NewModel(width, height int, renderer *lipgloss.Renderer) Model {
@@ -29,7 +28,7 @@ func NewModel(width, height int, renderer *lipgloss.Renderer) Model {
 }
 
 func (m Model) Init() tea.Cmd {
-	return waitForRefreshSignal(m.UpdateCh)
+	return waitForRefreshSignal(m.Player.UpdateChan)
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -41,7 +40,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.handleKey(msg)
 
 	case messages.RefreshGame:
-		return m, waitForRefreshSignal(m.UpdateCh)
+		return m, waitForRefreshSignal(m.Player.UpdateChan)
 	}
 
 	return m, nil
