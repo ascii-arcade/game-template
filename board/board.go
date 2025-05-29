@@ -21,6 +21,15 @@ type Model struct {
 	UpdateCh chan struct{}
 }
 
+func NewModel(term string, width, height int, renderer *lipgloss.Renderer) Model {
+	return Model{
+		Term:     term,
+		Width:    width,
+		Height:   height,
+		Renderer: renderer,
+	}
+}
+
 func (m Model) Init() tea.Cmd {
 	return waitForRefreshSignal(m.UpdateCh)
 }
