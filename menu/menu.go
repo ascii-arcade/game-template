@@ -96,7 +96,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m Model) View() string {
 	content := logo + "\n\n\n"
 	if m.isJoining {
-		content += "Enter the game code to join:\n\n" + m.gameCodeInput.View()
+		content += "\nEnter the game code to join:\n\n" + m.gameCodeInput.View()
 	} else {
 		content += "Welcome to the Game!\n\n"
 		content += "Press 'n' to create a new game.\n"
