@@ -9,15 +9,13 @@ import (
 
 	"github.com/ascii-arcade/wish-template/internal/board"
 	"github.com/ascii-arcade/wish-template/internal/game"
-	generateRandom "github.com/ascii-arcade/wish-template/internal/generate_random"
 	"github.com/ascii-arcade/wish-template/internal/menu"
 	"github.com/ascii-arcade/wish-template/internal/messages"
 )
 
 type rootModel struct {
 	active tea.Model
-	menu   menu.Model
-	board  board.Model
+	sess   ssh.Session
 }
 
 func (m rootModel) Init() tea.Cmd {
@@ -25,30 +23,29 @@ func (m rootModel) Init() tea.Cmd {
 }
 
 func (m rootModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg.(type) {
-	case messages.SwitchToMenu:
-		m.active = m.menu
-	case messages.SwitchToGame:
-		m.active = m.board
-		m.board.Init()
+	switch msg := msg.(type) {
+	case messages.SwitchViewMsg:
+		m.active = msg.NewModel
+		initcmd := msg.NewModel.Init()
+		return m, initcmd
 	case messages.NewGame:
-		err := m.newGame()
-		if err == nil {
-			m.active = m.board
-			m.board.Init()
+		model, _ := m.joinGame(game.NewGame().Code)
+		return m, func() tea.Msg {
+			return messages.SwitchViewMsg{
+				NewModel: model,
+			}
 		}
 	case messages.JoinGame:
-		joinMsg := msg.(messages.JoinGame)
-		err := m.joinGame(joinMsg.GameCode)
-		if err == nil {
-			m.active = m.board
-			m.board.Init()
+		model, _ := m.joinGame(msg.GameCode)
+		return m, func() tea.Msg {
+			return messages.SwitchViewMsg{
+				NewModel: model,
+			}
 		}
 	}
 
-	var cmd tea.Cmd
-	newModel, cmd := m.active.Update(msg)
-	m.active = newModel
+	updateModel, cmd := m.active.Update(msg)
+	m.active = updateModel
 	return m, cmd
 }
 
@@ -60,52 +57,25 @@ func TeaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 	pty, _, _ := s.Pty()
 	renderer := bubbletea.MakeRenderer(s)
 
-	name := generateRandom.Name()
-
 	m := rootModel{
-		board: board.Model{
-			Player:   name,
-			Term:     pty.Term,
-			Width:    pty.Window.Width,
-			Height:   pty.Window.Height,
-			Renderer: renderer,
-		},
-		menu: menu.NewModel(pty.Term, pty.Window.Width, pty.Window.Height, renderer),
+		active: menu.NewModel(pty.Term, pty.Window.Width, pty.Window.Height, renderer),
+		sess:   s,
 	}
-	m.active = m.menu
 
 	return m, []tea.ProgramOption{tea.WithAltScreen()}
 }
 
-func (m *rootModel) newGame() error {
-	code := generateRandom.Code([]string{})
-	game.Games[code] = game.NewGame()
-	err := m.joinGame(code)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *rootModel) joinGame(code string) error {
-	updateCh := make(chan int)
-	m.board.UpdateCh = updateCh
-	m.board.GameCode = code
-
-	state, exists := game.Games[code]
+func (m *rootModel) joinGame(code string) (tea.Model, error) {
+	state, exists := game.GetGame(code)
 	if !exists {
-		return errors.New("game does not exist")
+		return nil, errors.New("game does not exist")
 	}
+	player := state.AddPlayer()
 
-	state.AddClient(updateCh)
-	state.Players[m.board.Player] = &game.Player{
-		Name:      m.board.Player,
-		TurnOrder: len(state.Players) + 1,
-	}
+	pty, _, _ := m.sess.Pty()
+	renderer := bubbletea.MakeRenderer(m.sess)
 
 	state.Refresh()
 
-	return nil
+	return board.New(pty.Term, renderer, state, player), nil
 }

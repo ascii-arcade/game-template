@@ -1,9 +1,14 @@
 package messages
 
+import (
+	tea "github.com/charmbracelet/bubbletea"
+)
+
 type (
-	SwitchToMenu struct{}
-	SwitchToGame struct{}
-	NewGame      struct{}
-	JoinGame     struct{ GameCode string }
-	RefreshGame  int
+	SwitchViewMsg struct {
+		NewModel tea.Model
+	}
+	NewGame     struct{}
+	JoinGame    struct{ GameCode string }
+	RefreshGame struct{}
 )

@@ -2,7 +2,6 @@ package board
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/ascii-arcade/wish-template/internal/game"
 	"github.com/ascii-arcade/wish-template/internal/messages"
@@ -11,48 +10,58 @@ import (
 )
 
 type Model struct {
-	Player   string
 	Term     string
-	Width    int
-	Height   int
 	Renderer *lipgloss.Renderer
+	Player   *game.Player
+	Game     *game.Game
 
-	GameCode string
-	UpdateCh chan int
+	width  int
+	height int
+}
+
+func New(term string, renderer *lipgloss.Renderer, game *game.Game, player *game.Player) Model {
+	return Model{
+		Term:     term,
+		Renderer: renderer,
+		Game:     game,
+		Player:   player,
+	}
 }
 
 func (m Model) Init() tea.Cmd {
-	return waitForRefreshSignal(m.UpdateCh)
+	return tea.Batch(
+		waitForRefreshSignal(m.Player.RefreshCh),
+		tea.WindowSize(),
+	)
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		m.Height, m.Width = msg.Height, msg.Width
+		m.height, m.width = msg.Height, msg.Width
 
 	case tea.KeyMsg:
 		return m.handleKey(msg)
 
 	case messages.RefreshGame:
-		return m, waitForRefreshSignal(m.UpdateCh)
+		return m, waitForRefreshSignal(m.Player.RefreshCh)
 	}
 
 	return m, nil
 }
 
 func (m *Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
-	state := m.gameState()
-	state.LockState()
+	m.Game.LockState()
 	defer func() {
-		state.UnlockState()
-		state.Refresh()
+		m.Game.UnlockState()
+		m.Game.Refresh()
 	}()
 
 	switch msg.String() {
 	case "a":
-		state.Players[m.Player].Count++
+		m.Player.Count++
 	case "q", "ctrl+c":
-		state.RemoveClient(m.UpdateCh, m.Player)
+		m.Game.RemovePlayer(m.Player)
 		return m, tea.Quit
 	}
 
@@ -61,27 +70,18 @@ func (m *Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 func (m Model) View() string {
 	counts := ""
-	for _, p := range m.gameState().OrderedPlayers() {
+	for _, p := range m.Game.OrderedPlayers() {
 		counts += fmt.Sprintf("%s: %d\n", p.Name, p.Count)
 	}
 
 	return m.Renderer.NewStyle().Render(fmt.Sprintf("You are %s", m.Player)) +
 		"\n\n" + counts +
-		"\n\n'" + m.GameCode + "'" +
+		"\n\n'" + m.Game.Code + "'" +
 		"\n\n" + m.Renderer.NewStyle().Render("Press 'q' to quit")
 }
 
-func (m *Model) gameState() *game.Game {
-	state, exists := game.Games[m.GameCode]
-	if !exists {
-		log.Fatal("Game does not exist", "code", m.GameCode)
-	}
-	return state
-}
-
-func waitForRefreshSignal(ch chan int) tea.Cmd {
+func waitForRefreshSignal(ch chan messages.RefreshGame) tea.Cmd {
 	return func() tea.Msg {
-		v := <-ch
-		return messages.RefreshGame(v)
+		return <-ch
 	}
 }

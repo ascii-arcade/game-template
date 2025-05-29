@@ -1,16 +1,11 @@
-package generate_random
+package generaterandom
 
 import (
 	"crypto/rand"
 	"math/big"
 )
 
-func Code(existing []string) string {
-	exists := make(map[string]struct{}, len(existing))
-	for _, v := range existing {
-		exists[v] = struct{}{}
-	}
-
+func Code() string {
 	for {
 		b := make([]byte, 7)
 		letters := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"

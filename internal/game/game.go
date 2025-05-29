@@ -3,27 +3,38 @@ package game
 import (
 	"sort"
 	"sync"
+
+	generaterandom "github.com/ascii-arcade/wish-template/internal/generate_random"
+	"github.com/ascii-arcade/wish-template/internal/messages"
 )
 
-var Games = make(map[string]*Game)
+var games = make(map[string]*Game)
 
 type Game struct {
 	mu      sync.Mutex
-	Clients map[chan int]struct{}
 	Players map[string]*Player
+	Code    string
 }
 
 type Player struct {
 	Name      string
 	Count     int
 	TurnOrder int
+	RefreshCh chan messages.RefreshGame
 }
 
 func NewGame() *Game {
-	return &Game{
-		Clients: make(map[chan int]struct{}),
+	g := &Game{
 		Players: make(map[string]*Player),
+		Code:    generaterandom.Code(),
 	}
+	games[g.Code] = g
+	return g
+}
+
+func GetGame(code string) (*Game, bool) {
+	g, exists := games[code]
+	return g, exists
 }
 
 func (s *Game) LockState() {
@@ -49,21 +60,35 @@ func (s *Game) OrderedPlayers() []*Player {
 func (s *Game) Refresh() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	for ch := range s.Clients {
-		select {
-		case ch <- 0:
-		default:
+	for _, p := range s.Players {
+		if p.RefreshCh != nil {
+			select {
+			case p.RefreshCh <- messages.RefreshGame{}:
+			default:
+			}
 		}
 	}
 }
 
-func (s *Game) AddClient(ch chan int) {
+func (s *Game) RemovePlayer(player *Player) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.Clients[ch] = struct{}{}
+	if p, exists := s.Players[player.Name]; exists {
+		close(p.RefreshCh) // Close the channel to signal no more updates
+		delete(s.Players, player.Name)
+	}
 }
 
-func (s *Game) RemoveClient(ch chan int, player string) {
-	delete(s.Clients, ch)
-	delete(s.Players, player)
+func (s *Game) AddPlayer() *Player {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	player := &Player{
+		Name:      generaterandom.Name(),
+		Count:     0,
+		TurnOrder: len(s.Players) + 1,
+		RefreshCh: make(chan messages.RefreshGame, 1),
+	}
+	s.Players[player.Name] = player
+	return player
 }
