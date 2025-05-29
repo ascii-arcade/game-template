@@ -52,48 +52,48 @@ func (s *Game) refresh() {
 	}
 }
 
-func (s *Game) Count(pName string) {
+func (s *Game) withLock(fn func()) {
 	s.mu.Lock()
 	defer func() {
 		s.refresh()
 		s.mu.Unlock()
 	}()
-	if player, exists := s.Players[pName]; exists {
-		player.Count++
-	}
+	fn()
+}
+
+func (s *Game) Count(pName string) {
+	s.withLock(func() {
+		if player, exists := s.Players[pName]; exists {
+			player.Count++
+		}
+	})
 }
 
 func (s *Game) AddPlayer(updateChan chan struct{}) *Player {
-	s.mu.Lock()
-	defer func() {
-		s.refresh()
-		s.mu.Unlock()
-	}()
+	var player *Player
+	s.withLock(func() {
+		player = &Player{
+			Name:       generaterandom.Name(),
+			Count:      0,
+			TurnOrder:  len(s.Players),
+			UpdateChan: updateChan,
+		}
 
-	player := &Player{
-		Name:       generaterandom.Name(),
-		Count:      0,
-		TurnOrder:  len(s.Players),
-		UpdateChan: updateChan,
-	}
+		s.Players[player.Name] = player
+	})
 
-	s.Players[player.Name] = player
 	return player
 }
 
 func (s *Game) RemovePlayer(playerName string) {
-	s.mu.Lock()
-	defer func() {
-		s.refresh()
-		s.mu.Unlock()
-	}()
+	s.withLock(func() {
+		if player, exists := s.Players[playerName]; exists {
+			close(player.UpdateChan)
+			delete(s.Players, playerName)
 
-	if player, exists := s.Players[playerName]; exists {
-		close(player.UpdateChan)
-		delete(s.Players, playerName)
-
-		if len(s.Players) == 0 {
-			delete(games, playerName)
+			if len(s.Players) == 0 {
+				delete(games, playerName)
+			}
 		}
-	}
+	})
 }
