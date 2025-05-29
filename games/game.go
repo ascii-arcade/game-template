@@ -64,10 +64,16 @@ func (s *Game) withLock(fn func()) {
 func (s *Game) AddPlayer(updateChan chan struct{}) *Player {
 	var player *Player
 	s.withLock(func() {
+		maxTurnOrder := 0
+		for _, p := range s.Players {
+			if p.TurnOrder > maxTurnOrder {
+				maxTurnOrder = p.TurnOrder
+			}
+		}
 		player = &Player{
 			Name:       generaterandom.Name(),
 			Count:      0,
-			TurnOrder:  len(s.Players),
+			TurnOrder:  maxTurnOrder + 1,
 			UpdateChan: updateChan,
 		}
 
