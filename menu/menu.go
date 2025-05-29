@@ -7,6 +7,21 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+const logo = `++------------------------------------------------------------------------------++
+++------------------------------------------------------------------------------++
+||                                                                              ||
+||                                                                              ||
+||      _    ____   ____ ___ ___        _    ____   ____    _    ____  _____    ||
+||     / \  / ___| / ___|_ _|_ _|      / \  |  _ \ / ___|  / \  |  _ \| ____|   ||
+||    / _ \ \___ \| |    | | | |_____ / _ \ | |_) | |     / _ \ | | | |  _|     ||
+||   / ___ \ ___) | |___ | | | |_____/ ___ \|  _ <| |___ / ___ \| |_| | |___    ||
+||  /_/   \_\____/ \____|___|___|   /_/   \_\_| \_\\____/_/   \_\____/|_____|   ||
+||                                                                              ||
+||                                                                              ||
+||                                                                              ||
+++------------------------------------------------------------------------------++
+++------------------------------------------------------------------------------++`
+
 type Model struct {
 	Term     string
 	Width    int
@@ -81,11 +96,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	var content string
+	content := logo + "\n\n\n"
 	if m.isJoining {
-		content = "Enter the game code to join:\n\n" + m.gameCodeInput.View()
+		content += "Enter the game code to join:\n\n" + m.gameCodeInput.View()
 	} else {
-		content = "Welcome to the Game!\n\n"
+		content += "Welcome to the Game!\n\n"
 		content += "Press 'n' to create a new game.\n"
 		content += "Press 'j' to join an existing game.\n"
 	}
