@@ -26,7 +26,7 @@ type Model struct {
 	Term     string
 	Width    int
 	Height   int
-	Renderer *lipgloss.Renderer
+	renderer *lipgloss.Renderer
 
 	isJoining     bool
 	gameCodeInput textinput.Model
@@ -41,7 +41,7 @@ func NewModel(term string, width, height int, renderer *lipgloss.Renderer) Model
 		Term:     term,
 		Width:    width,
 		Height:   height,
-		Renderer: renderer,
+		renderer: renderer,
 
 		isJoining:     false,
 		gameCodeInput: ti,

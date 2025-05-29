@@ -14,7 +14,7 @@ type Model struct {
 	Term     string
 	Width    int
 	Height   int
-	Renderer *lipgloss.Renderer
+	renderer *lipgloss.Renderer
 
 	Player   *games.Player
 	Game     *games.Game
@@ -26,7 +26,7 @@ func NewModel(term string, width, height int, renderer *lipgloss.Renderer) Model
 		Term:     term,
 		Width:    width,
 		Height:   height,
-		Renderer: renderer,
+		renderer: renderer,
 	}
 }
 
@@ -72,10 +72,10 @@ func (m Model) View() string {
 		counts += fmt.Sprintf("%s: %d\n", p.Name, p.Count)
 	}
 
-	return m.Renderer.NewStyle().Render(fmt.Sprintf("You are %s", m.Player.Name)) +
+	return m.renderer.NewStyle().Render(fmt.Sprintf("You are %s", m.Player.Name)) +
 		"\n\n" + counts +
 		"\n\n'" + m.Game.Code + "'" +
-		"\n\n" + m.Renderer.NewStyle().Render("Press 'q' to quit")
+		"\n\n" + m.renderer.NewStyle().Render("Press 'q' to quit")
 }
 
 func (m *Model) gameState() *games.Game {
