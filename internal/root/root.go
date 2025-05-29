@@ -2,7 +2,6 @@ package root
 
 import (
 	"errors"
-	"log"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/ssh"
@@ -32,6 +31,19 @@ func (m rootModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case messages.SwitchToGame:
 		m.active = m.board
 		m.board.Init()
+	case messages.NewGame:
+		err := m.newGame()
+		if err == nil {
+			m.active = m.board
+			m.board.Init()
+		}
+	case messages.JoinGame:
+		joinMsg := msg.(messages.JoinGame)
+		err := m.joinGame(joinMsg.GameCode)
+		if err == nil {
+			m.active = m.board
+			m.board.Init()
+		}
 	}
 
 	var cmd tea.Cmd
@@ -58,19 +70,9 @@ func TeaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 			Height:   pty.Window.Height,
 			Renderer: renderer,
 		},
-		menu: menu.Model{
-			Term:     pty.Term,
-			Width:    pty.Window.Width,
-			Height:   pty.Window.Height,
-			Renderer: renderer,
-		},
+		menu: menu.NewModel(pty.Term, pty.Window.Width, pty.Window.Height, renderer),
 	}
 	m.active = m.menu
-
-	err := m.newGame()
-	if err != nil {
-		log.Fatal("Could not create new game", "error", err)
-	}
 
 	return m, []tea.ProgramOption{tea.WithAltScreen()}
 }

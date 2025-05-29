@@ -5,11 +5,10 @@ import (
 	"log"
 
 	"github.com/ascii-arcade/wish-template/internal/game"
+	"github.com/ascii-arcade/wish-template/internal/messages"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
-
-type refreshSignal int
 
 type Model struct {
 	Player   string
@@ -34,7 +33,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		return m.handleKey(msg)
 
-	case refreshSignal:
+	case messages.RefreshGame:
 		return m, waitForRefreshSignal(m.UpdateCh)
 	}
 
@@ -83,6 +82,6 @@ func (m *Model) gameState() *game.Game {
 func waitForRefreshSignal(ch chan int) tea.Cmd {
 	return func() tea.Msg {
 		v := <-ch
-		return refreshSignal(v)
+		return messages.RefreshGame(v)
 	}
 }
