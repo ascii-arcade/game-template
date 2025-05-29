@@ -66,6 +66,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if len(m.gameCodeInput.Value()) == 7 {
 					return m, func() tea.Msg { return messages.JoinGame{GameCode: m.gameCodeInput.Value()} }
 				}
+			default:
+				val := m.gameCodeInput.Value()
+				if len(val) == 3 && msg.Type == tea.KeyRunes && msg.Runes[0] != '-' {
+					val = val + "-"
+					m.gameCodeInput.SetValue(val)
+					m.gameCodeInput.CursorEnd()
+				}
 			}
 
 			m.gameCodeInput, cmd = m.gameCodeInput.Update(msg)
