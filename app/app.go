@@ -77,7 +77,6 @@ func TeaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 
 func (m *Model) newGame() error {
 	newGame := games.New()
-	games.Games[newGame.Code] = newGame
 	m.board.Game = newGame
 	return m.joinGame(newGame.Code)
 }
