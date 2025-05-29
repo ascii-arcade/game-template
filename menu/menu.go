@@ -23,25 +23,23 @@ const logo = `++----------------------------------------------------------------
 ++------------------------------------------------------------------------------++`
 
 type Model struct {
-	Term     string
 	Width    int
 	Height   int
-	Renderer *lipgloss.Renderer
+	renderer *lipgloss.Renderer
 
 	isJoining     bool
 	gameCodeInput textinput.Model
 }
 
-func NewModel(term string, width, height int, renderer *lipgloss.Renderer) Model {
+func NewModel(width, height int, renderer *lipgloss.Renderer) Model {
 	ti := textinput.New()
 	ti.Width = 9
 	ti.CharLimit = 7
 
 	return Model{
-		Term:     term,
 		Width:    width,
 		Height:   height,
-		Renderer: renderer,
+		renderer: renderer,
 
 		isJoining:     false,
 		gameCodeInput: ti,
@@ -105,7 +103,7 @@ func (m Model) View() string {
 		content += "Press 'j' to join an existing game.\n"
 	}
 
-	style := lipgloss.NewStyle().
+	style := m.renderer.NewStyle().
 		Width(m.Width).
 		Height(m.Height)
 

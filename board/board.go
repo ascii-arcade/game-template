@@ -11,14 +11,21 @@ import (
 )
 
 type Model struct {
-	Term     string
 	Width    int
 	Height   int
-	Renderer *lipgloss.Renderer
+	renderer *lipgloss.Renderer
 
 	Player   *games.Player
 	Game     *games.Game
 	UpdateCh chan struct{}
+}
+
+func NewModel(width, height int, renderer *lipgloss.Renderer) Model {
+	return Model{
+		Width:    width,
+		Height:   height,
+		renderer: renderer,
+	}
 }
 
 func (m Model) Init() tea.Cmd {
@@ -63,10 +70,10 @@ func (m Model) View() string {
 		counts += fmt.Sprintf("%s: %d\n", p.Name, p.Count)
 	}
 
-	return m.Renderer.NewStyle().Render(fmt.Sprintf("You are %s", m.Player.Name)) +
+	return m.renderer.NewStyle().Render(fmt.Sprintf("You are %s", m.Player.Name)) +
 		"\n\n" + counts +
 		"\n\n'" + m.Game.Code + "'" +
-		"\n\n" + m.Renderer.NewStyle().Render("Press 'q' to quit")
+		"\n\n" + m.renderer.NewStyle().Render("Press 'q' to quit")
 }
 
 func (m *Model) gameState() *games.Game {

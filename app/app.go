@@ -67,13 +67,8 @@ func TeaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 	renderer := bubbletea.MakeRenderer(s)
 
 	m := Model{
-		board: board.Model{
-			Term:     pty.Term,
-			Width:    pty.Window.Width,
-			Height:   pty.Window.Height,
-			Renderer: renderer,
-		},
-		menu: menu.NewModel(pty.Term, pty.Window.Width, pty.Window.Height, renderer),
+		board: board.NewModel(pty.Window.Width, pty.Window.Height, renderer),
+		menu:  menu.NewModel(pty.Window.Width, pty.Window.Height, renderer),
 	}
 	m.active = m.menu
 
