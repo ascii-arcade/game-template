@@ -103,7 +103,7 @@ func (m Model) View() string {
 		content += "Press 'j' to join an existing game.\n"
 	}
 
-	style := lipgloss.NewStyle().
+	style := m.renderer.NewStyle().
 		Width(m.Width).
 		Height(m.Height)
 
