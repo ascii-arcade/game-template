@@ -1,4 +1,4 @@
-package generate_random
+package generaterandom
 
 import (
 	"fmt"

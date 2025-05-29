@@ -68,11 +68,8 @@ func TeaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 	pty, _, _ := s.Pty()
 	renderer := bubbletea.MakeRenderer(s)
 
-	name := generateRandom.Name()
-
 	m := rootModel{
 		board: board.Model{
-			Player:   name,
 			Term:     pty.Term,
 			Width:    pty.Window.Width,
 			Height:   pty.Window.Height,
@@ -107,11 +104,8 @@ func (m *rootModel) joinGame(code string) error {
 		return errors.New("game does not exist")
 	}
 
-	state.AddClient(updateCh)
-	state.Players[m.board.Player] = &game.Player{
-		Name:      m.board.Player,
-		TurnOrder: len(state.Players) + 1,
-	}
+	player := state.AddPlayer(updateCh)
+	m.board.Player = player.Name
 
 	state.Refresh()
 

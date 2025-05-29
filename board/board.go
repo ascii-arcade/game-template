@@ -41,18 +41,16 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
-	state := m.gameState()
-	state.LockState()
+	game := m.gameState()
 	defer func() {
-		state.UnlockState()
-		state.Refresh()
+		game.Refresh()
 	}()
 
 	switch msg.String() {
 	case "a":
-		state.Players[m.Player].Count++
+		game.Count(m.Player)
 	case "q", "ctrl+c":
-		state.RemoveClient(m.UpdateCh, m.Player)
+		game.RemovePlayer(m.Player)
 		return m, tea.Quit
 	}
 
@@ -72,11 +70,11 @@ func (m Model) View() string {
 }
 
 func (m *Model) gameState() *game.Game {
-	state, exists := game.Games[m.GameCode]
+	game, exists := game.Games[m.GameCode]
 	if !exists {
 		log.Fatal("Game does not exist", "code", m.GameCode)
 	}
-	return state
+	return game
 }
 
 func waitForRefreshSignal(ch chan int) tea.Cmd {

@@ -3,13 +3,14 @@ package game
 import (
 	"sort"
 	"sync"
+
+	generaterandom "github.com/ascii-arcade/wish-template/generate_random"
 )
 
 var Games = make(map[string]*Game)
 
 type Game struct {
 	mu      sync.Mutex
-	Clients map[chan int]struct{}
 	Players map[string]*Player
 }
 
@@ -17,11 +18,12 @@ type Player struct {
 	Name      string
 	Count     int
 	TurnOrder int
+
+	UpdateChan chan int
 }
 
 func NewGame() *Game {
 	return &Game{
-		Clients: make(map[chan int]struct{}),
 		Players: make(map[string]*Player),
 	}
 }
@@ -49,25 +51,47 @@ func (s *Game) OrderedPlayers() []*Player {
 func (s *Game) Refresh() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	for ch := range s.Clients {
+	for _, p := range s.Players {
 		select {
-		case ch <- 0:
+		case p.UpdateChan <- 0:
 		default:
 		}
 	}
 }
 
-func (s *Game) AddClient(ch chan int) {
+func (s *Game) Count(pName string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.Clients[ch] = struct{}{}
+	if player, exists := s.Players[pName]; exists {
+		player.Count++
+	}
 }
 
-func (s *Game) RemoveClient(ch chan int, player string) {
-	delete(s.Clients, ch)
-	delete(s.Players, player)
+func (s *Game) AddPlayer(updateChan chan int) *Player {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
-	if len(s.Players) == 0 {
-		delete(Games, player)
+	player := &Player{
+		Name:       generaterandom.Name(),
+		Count:      0,
+		TurnOrder:  len(s.Players),
+		UpdateChan: updateChan,
+	}
+
+	s.Players[player.Name] = player
+	return player
+}
+
+func (s *Game) RemovePlayer(playerName string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if player, exists := s.Players[playerName]; exists {
+		close(player.UpdateChan)
+		delete(s.Players, playerName)
+
+		if len(s.Players) == 0 {
+			delete(Games, playerName)
+		}
 	}
 }
