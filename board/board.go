@@ -49,9 +49,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m *Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	game := m.gameState()
-	defer func() {
-		game.Refresh()
-	}()
 
 	switch msg.String() {
 	case "a":

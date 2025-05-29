@@ -94,7 +94,5 @@ func (m *Model) joinGame(code string) error {
 	player := game.AddPlayer(updateCh)
 	m.board.Player = player
 
-	game.Refresh()
-
 	return nil
 }

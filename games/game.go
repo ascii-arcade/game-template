@@ -26,6 +26,11 @@ func New() *Game {
 	return game
 }
 
+func Get(code string) (*Game, bool) {
+	game, exists := games[code]
+	return game, exists
+}
+
 func (s *Game) OrderedPlayers() []*Player {
 	var players []*Player
 	for _, p := range s.Players {
@@ -38,9 +43,7 @@ func (s *Game) OrderedPlayers() []*Player {
 	return players
 }
 
-func (s *Game) Refresh() {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+func (s *Game) refresh() {
 	for _, p := range s.Players {
 		select {
 		case p.UpdateChan <- struct{}{}:
@@ -51,20 +54,21 @@ func (s *Game) Refresh() {
 
 func (s *Game) Count(pName string) {
 	s.mu.Lock()
-	defer s.mu.Unlock()
+	defer func() {
+		s.refresh()
+		s.mu.Unlock()
+	}()
 	if player, exists := s.Players[pName]; exists {
 		player.Count++
 	}
 }
 
-func Get(code string) (*Game, bool) {
-	game, exists := games[code]
-	return game, exists
-}
-
 func (s *Game) AddPlayer(updateChan chan struct{}) *Player {
 	s.mu.Lock()
-	defer s.mu.Unlock()
+	defer func() {
+		s.refresh()
+		s.mu.Unlock()
+	}()
 
 	player := &Player{
 		Name:       generaterandom.Name(),
@@ -79,7 +83,10 @@ func (s *Game) AddPlayer(updateChan chan struct{}) *Player {
 
 func (s *Game) RemovePlayer(playerName string) {
 	s.mu.Lock()
-	defer s.mu.Unlock()
+	defer func() {
+		s.refresh()
+		s.mu.Unlock()
+	}()
 
 	if player, exists := s.Players[playerName]; exists {
 		close(player.UpdateChan)
