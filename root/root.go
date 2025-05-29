@@ -25,14 +25,9 @@ func (m rootModel) Init() tea.Cmd {
 
 func (m rootModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case messages.SwitchToMenu:
-		m.active = m.menu
-		initcmd := m.menu.Init()
-		return m, initcmd
-	case messages.SwitchToGame:
-		m.active = m.board
-		m.board.Init()
-		initcmd := m.board.Init()
+	case messages.SwitchViewMsg:
+		m.active = msg.Model
+		initcmd := m.active.Init()
 		return m, initcmd
 	case messages.NewGame:
 		err := m.newGame()
@@ -41,7 +36,9 @@ func (m rootModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.board.Init()
 		}
 		return m, func() tea.Msg {
-			return messages.SwitchToGame{}
+			return messages.SwitchViewMsg{
+				Model: m.board,
+			}
 		}
 	case messages.JoinGame:
 		err := m.joinGame(msg.GameCode)
@@ -50,7 +47,9 @@ func (m rootModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.board.Init()
 		}
 		return m, func() tea.Msg {
-			return messages.SwitchToGame{}
+			return messages.SwitchViewMsg{
+				Model: m.board,
+			}
 		}
 	}
 
