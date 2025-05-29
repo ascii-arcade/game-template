@@ -11,7 +11,6 @@ import (
 )
 
 type Model struct {
-	Term     string
 	Width    int
 	Height   int
 	renderer *lipgloss.Renderer
@@ -21,9 +20,8 @@ type Model struct {
 	UpdateCh chan struct{}
 }
 
-func NewModel(term string, width, height int, renderer *lipgloss.Renderer) Model {
+func NewModel(width, height int, renderer *lipgloss.Renderer) Model {
 	return Model{
-		Term:     term,
 		Width:    width,
 		Height:   height,
 		renderer: renderer,

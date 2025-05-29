@@ -23,7 +23,6 @@ const logo = `++----------------------------------------------------------------
 ++------------------------------------------------------------------------------++`
 
 type Model struct {
-	Term     string
 	Width    int
 	Height   int
 	renderer *lipgloss.Renderer
@@ -32,13 +31,12 @@ type Model struct {
 	gameCodeInput textinput.Model
 }
 
-func NewModel(term string, width, height int, renderer *lipgloss.Renderer) Model {
+func NewModel(width, height int, renderer *lipgloss.Renderer) Model {
 	ti := textinput.New()
 	ti.Width = 9
 	ti.CharLimit = 7
 
 	return Model{
-		Term:     term,
 		Width:    width,
 		Height:   height,
 		renderer: renderer,
