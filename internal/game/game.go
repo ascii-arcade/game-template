@@ -66,4 +66,9 @@ func (s *Game) AddClient(ch chan int) {
 func (s *Game) RemoveClient(ch chan int, player string) {
 	delete(s.Clients, ch)
 	delete(s.Players, player)
+
+	if len(s.Players) == 0 {
+		delete(Games, player)
+		return
+	}
 }
