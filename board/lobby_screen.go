@@ -1,9 +1,8 @@
 package board
 
 import (
-	"fmt"
-
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 type lobbyScreen struct {
@@ -27,9 +26,42 @@ func (s *lobbyScreen) Update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 }
 
 func (s *lobbyScreen) View() string {
+	style := s.model.renderer.NewStyle().Width(s.model.Width / 3)
+
+	footer := "\nWaiting for host to start the game..."
+	if s.model.Player.IsHost() {
+		footer = "Press 's' to start the game."
+	}
+	footer += "\nPress 'ctrl+c' to quit."
+
+	header := s.model.Game.Code
+	playerList := s.model.renderer.NewStyle().Render(s.playerList())
+
+	content := lipgloss.JoinVertical(
+		lipgloss.Left,
+		style.Align(lipgloss.Center).MarginBottom(2).Render(header),
+		style.Render(playerList),
+		style.Render(footer),
+	)
+
+	return s.model.renderer.NewStyle().Width(s.model.Width).Height(s.model.Height).Render(
+		lipgloss.Place(
+			s.model.Width,
+			s.model.Height,
+			lipgloss.Center,
+			lipgloss.Center,
+			s.model.renderer.NewStyle().
+				Padding(2, 2).
+				BorderStyle(lipgloss.NormalBorder()).
+				Render(content),
+		),
+	)
+}
+
+func (s *lobbyScreen) playerList() string {
 	playerList := ""
 	for _, p := range s.model.gameState().OrderedPlayers() {
-		playerList += p.Name
+		playerList += "* " + p.Name
 		if p.Name == s.model.Player.Name {
 			playerList += " (you)"
 		}
@@ -38,15 +70,5 @@ func (s *lobbyScreen) View() string {
 		}
 		playerList += "\n"
 	}
-
-	waitingMessage := "Waiting for host to start the game..."
-	if s.model.Player.IsHost() {
-		waitingMessage = "You are the host. Press 's' to start the game."
-	}
-
-	return s.model.renderer.NewStyle().Render(fmt.Sprintf("You are %s", s.model.Player.Name)) +
-		"\n\n'" + s.model.Game.Code + "'" +
-		"\n\n" + s.model.renderer.NewStyle().Render(playerList) +
-		"\n\n" + s.model.renderer.NewStyle().Render(waitingMessage) +
-		"\n\n" + s.model.renderer.NewStyle().Render("Press 'ctrl+c' to quit")
+	return playerList
 }
