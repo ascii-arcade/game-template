@@ -7,24 +7,29 @@ import (
 )
 
 type tableScreen struct {
+	model *Model
 }
 
-func (l tableScreen) Update(m *Model, msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+func (s *tableScreen) setModel(model *Model) {
+	s.model = model
+}
+
+func (s *tableScreen) Update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 	case "a":
-		m.gameState().Count(m.Player.Name)
+		s.model.gameState().Count(s.model.Player.Name)
 	}
 
-	return m, nil
+	return s.model, nil
 }
 
-func (l tableScreen) View(m *Model) string {
+func (s *tableScreen) View() string {
 	counts := ""
-	for _, p := range m.gameState().OrderedPlayers() {
+	for _, p := range s.model.gameState().OrderedPlayers() {
 		counts += fmt.Sprintf("%s: %d\n", p.Name, p.Count)
 	}
 
-	return m.renderer.NewStyle().Render(fmt.Sprintf("You are %s", m.Player.Name)) +
+	return s.model.renderer.NewStyle().Render(fmt.Sprintf("You are %s", s.model.Player.Name)) +
 		"\n\n" + counts +
-		"\n\n" + m.renderer.NewStyle().Render("Press 'ctrl+c' to quit")
+		"\n\n" + s.model.renderer.NewStyle().Render("Press 'ctrl+c' to quit")
 }

@@ -7,25 +7,30 @@ import (
 )
 
 type lobbyScreen struct {
+	model *Model
 }
 
-func (l lobbyScreen) Update(m *Model, msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+func (s *lobbyScreen) setModel(model *Model) {
+	s.model = model
+}
+
+func (s *lobbyScreen) Update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 	case "s":
-		if m.Player.IsHost() {
-			m.screen = tableScreen{}
-			m.gameState().Begin()
+		if s.model.Player.IsHost() {
+			s.model.screen = &tableScreen{}
+			s.model.gameState().Begin()
 		}
 	}
 
-	return m, nil
+	return s.model, nil
 }
 
-func (l lobbyScreen) View(m *Model) string {
+func (s *lobbyScreen) View() string {
 	playerList := ""
-	for _, p := range m.gameState().OrderedPlayers() {
+	for _, p := range s.model.gameState().OrderedPlayers() {
 		playerList += p.Name
-		if p.Name == m.Player.Name {
+		if p.Name == s.model.Player.Name {
 			playerList += " (you)"
 		}
 		if p.IsHost() {
@@ -35,13 +40,13 @@ func (l lobbyScreen) View(m *Model) string {
 	}
 
 	waitingMessage := "Waiting for host to start the game..."
-	if m.Player.IsHost() {
+	if s.model.Player.IsHost() {
 		waitingMessage = "You are the host. Press 's' to start the game."
 	}
 
-	return m.renderer.NewStyle().Render(fmt.Sprintf("You are %s", m.Player.Name)) +
-		"\n\n'" + m.Game.Code + "'" +
-		"\n\n" + m.renderer.NewStyle().Render(playerList) +
-		"\n\n" + m.renderer.NewStyle().Render(waitingMessage) +
-		"\n\n" + m.renderer.NewStyle().Render("Press 'ctrl+c' to quit")
+	return s.model.renderer.NewStyle().Render(fmt.Sprintf("You are %s", s.model.Player.Name)) +
+		"\n\n'" + s.model.Game.Code + "'" +
+		"\n\n" + s.model.renderer.NewStyle().Render(playerList) +
+		"\n\n" + s.model.renderer.NewStyle().Render(waitingMessage) +
+		"\n\n" + s.model.renderer.NewStyle().Render("Press 'ctrl+c' to quit")
 }

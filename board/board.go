@@ -10,8 +10,9 @@ import (
 )
 
 type screen interface {
-	Update(*Model, tea.KeyMsg) (tea.Model, tea.Cmd)
-	View(*Model) string
+	setModel(*Model)
+	Update(tea.KeyMsg) (tea.Model, tea.Cmd)
+	View() string
 }
 
 type Model struct {
@@ -29,7 +30,7 @@ func NewModel(width, height int, renderer *lipgloss.Renderer) Model {
 		Width:    width,
 		Height:   height,
 		renderer: renderer,
-		screen:   tableScreen{},
+		screen:   &tableScreen{},
 	}
 }
 
@@ -48,7 +49,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.gameState().RemovePlayer(m.Player.Name)
 			return m, tea.Quit
 		default:
-			return m.activeScreen().Update(&m, msg)
+			return m.activeScreen().Update(msg)
 		}
 
 	case messages.RefreshGame:
@@ -59,7 +60,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	return m.activeScreen().View(&m)
+	return m.activeScreen().View()
 }
 
 func (m *Model) gameState() *games.Game {
@@ -72,9 +73,10 @@ func (m *Model) gameState() *games.Game {
 
 func (m *Model) activeScreen() screen {
 	if m.gameState().InProgress() {
+		m.screen.setModel(m)
 		return m.screen
 	} else {
-		return lobbyScreen{}
+		return &lobbyScreen{model: m}
 	}
 }
 
