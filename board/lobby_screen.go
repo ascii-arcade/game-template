@@ -18,7 +18,7 @@ func (s *lobbyScreen) update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "s":
 		if s.model.Player.IsHost() {
 			s.model.screen = &tableScreen{}
-			s.model.getGame().Begin()
+			s.model.Game.Begin()
 		}
 	}
 
@@ -60,7 +60,7 @@ func (s *lobbyScreen) view() string {
 
 func (s *lobbyScreen) playerList() string {
 	playerList := ""
-	for _, p := range s.model.getGame().OrderedPlayers() {
+	for _, p := range s.model.Game.OrderedPlayers() {
 		playerList += "* " + p.Name
 		if p.Name == s.model.Player.Name {
 			playerList += " (you)"
