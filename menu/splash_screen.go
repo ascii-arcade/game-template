@@ -28,11 +28,11 @@ func (s *splashScreen) setModel(model *Model) {
 	s.model = model
 }
 
-func (s *splashScreen) Update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+func (s *splashScreen) update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	return s.model, nil
 }
 
-func (s *splashScreen) View() string {
+func (s *splashScreen) view() string {
 	style := s.model.renderer.NewStyle().
 		Width(s.model.Width).
 		Height(s.model.Height)

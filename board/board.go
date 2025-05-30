@@ -11,8 +11,8 @@ import (
 
 type screen interface {
 	setModel(*Model)
-	Update(tea.KeyMsg) (tea.Model, tea.Cmd)
-	View() string
+	update(tea.KeyMsg) (tea.Model, tea.Cmd)
+	view() string
 }
 
 type Model struct {
@@ -49,7 +49,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.gameState().RemovePlayer(m.Player.Name)
 			return m, tea.Quit
 		default:
-			return m.activeScreen().Update(msg)
+			return m.activeScreen().update(msg)
 		}
 
 	case messages.RefreshGame:
@@ -60,7 +60,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	return m.activeScreen().View()
+	return m.activeScreen().view()
 }
 
 func (m *Model) gameState() *games.Game {

@@ -25,8 +25,8 @@ const logo = `++----------------------------------------------------------------
 
 type screen interface {
 	setModel(*Model)
-	Update(tea.KeyMsg) (tea.Model, tea.Cmd)
-	View() string
+	update(tea.KeyMsg) (tea.Model, tea.Cmd)
+	view() string
 }
 
 type doneMsg struct{}
@@ -79,7 +79,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			return m, tea.Quit
 		default:
-			return m.activeScreen().Update(msg)
+			return m.activeScreen().update(msg)
 		}
 	}
 
@@ -87,7 +87,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	return m.activeScreen().View()
+	return m.activeScreen().view()
 }
 
 func (m *Model) activeScreen() screen {

@@ -13,7 +13,7 @@ func (s *lobbyScreen) setModel(model *Model) {
 	s.model = model
 }
 
-func (s *lobbyScreen) Update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+func (s *lobbyScreen) update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 	case "s":
 		if s.model.Player.IsHost() {
@@ -25,7 +25,7 @@ func (s *lobbyScreen) Update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	return s.model, nil
 }
 
-func (s *lobbyScreen) View() string {
+func (s *lobbyScreen) view() string {
 	style := s.model.renderer.NewStyle().Width(s.model.Width / 3)
 
 	footer := "\nWaiting for host to start the game..."

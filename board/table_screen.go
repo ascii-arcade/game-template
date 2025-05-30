@@ -14,7 +14,7 @@ func (s *tableScreen) setModel(model *Model) {
 	s.model = model
 }
 
-func (s *tableScreen) Update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+func (s *tableScreen) update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 	case "a":
 		s.model.gameState().Count(s.model.Player.Name)
@@ -23,7 +23,7 @@ func (s *tableScreen) Update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	return s.model, nil
 }
 
-func (s *tableScreen) View() string {
+func (s *tableScreen) view() string {
 	counts := ""
 	for _, p := range s.model.gameState().OrderedPlayers() {
 		counts += fmt.Sprintf("%s: %d\n", p.Name, p.Count)

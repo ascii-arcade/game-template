@@ -14,7 +14,7 @@ func (s *optionScreen) setModel(model *Model) {
 	s.model = model
 }
 
-func (s *optionScreen) Update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+func (s *optionScreen) update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 	case "n":
 		return s.model, func() tea.Msg { return messages.NewGame{} }
@@ -27,7 +27,7 @@ func (s *optionScreen) Update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	return s.model, nil
 }
 
-func (s *optionScreen) View() string {
+func (s *optionScreen) view() string {
 	style := s.model.renderer.NewStyle().Width(s.model.Width).Height(s.model.Height)
 	paneStyle := s.model.renderer.NewStyle().Width(s.model.Width).Height(s.model.Height / 2)
 
