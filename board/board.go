@@ -1,7 +1,6 @@
 package board
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/ascii-arcade/wish-template/games"
@@ -10,10 +9,17 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+type screen interface {
+	setModel(*Model)
+	Update(tea.KeyMsg) (tea.Model, tea.Cmd)
+	View() string
+}
+
 type Model struct {
 	Width    int
 	Height   int
 	renderer *lipgloss.Renderer
+	screen   screen
 
 	Player *games.Player
 	Game   *games.Game
@@ -24,6 +30,7 @@ func NewModel(width, height int, renderer *lipgloss.Renderer) Model {
 		Width:    width,
 		Height:   height,
 		renderer: renderer,
+		screen:   &tableScreen{},
 	}
 }
 
@@ -37,7 +44,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.Height, m.Width = msg.Height, msg.Width
 
 	case tea.KeyMsg:
-		return m.handleKey(msg)
+		switch msg.String() {
+		case "ctrl+c":
+			m.gameState().RemovePlayer(m.Player.Name)
+			return m, tea.Quit
+		default:
+			return m.activeScreen().Update(msg)
+		}
 
 	case messages.RefreshGame:
 		return m, waitForRefreshSignal(m.Player.UpdateChan)
@@ -46,30 +59,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m *Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
-	game := m.gameState()
-
-	switch msg.String() {
-	case "a":
-		game.Count(m.Player.Name)
-	case "q", "ctrl+c":
-		game.RemovePlayer(m.Player.Name)
-		return m, tea.Quit
-	}
-
-	return m, nil
-}
-
 func (m Model) View() string {
-	counts := ""
-	for _, p := range m.gameState().OrderedPlayers() {
-		counts += fmt.Sprintf("%s: %d\n", p.Name, p.Count)
-	}
-
-	return m.renderer.NewStyle().Render(fmt.Sprintf("You are %s", m.Player.Name)) +
-		"\n\n" + counts +
-		"\n\n'" + m.Game.Code + "'" +
-		"\n\n" + m.renderer.NewStyle().Render("Press 'q' to quit")
+	return m.activeScreen().View()
 }
 
 func (m *Model) gameState() *games.Game {
@@ -78,6 +69,15 @@ func (m *Model) gameState() *games.Game {
 		log.Fatal("Game does not exist", "code", m.Game.Code)
 	}
 	return game
+}
+
+func (m *Model) activeScreen() screen {
+	if m.gameState().InProgress() {
+		m.screen.setModel(m)
+		return m.screen
+	} else {
+		return &lobbyScreen{model: m}
+	}
 }
 
 func waitForRefreshSignal(ch chan struct{}) tea.Cmd {

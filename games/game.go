@@ -14,8 +14,9 @@ var games = make(map[string]*Game)
 type Game struct {
 	Code string
 
-	mu      sync.Mutex
-	players []*Player
+	inProgress bool
+	mu         sync.Mutex
+	players    []*Player
 }
 
 func New() *Game {
@@ -31,6 +32,16 @@ func New() *Game {
 func Get(code string) (*Game, bool) {
 	game, exists := games[code]
 	return game, exists
+}
+
+func (s *Game) InProgress() bool {
+	return s.inProgress
+}
+
+func (s *Game) Begin() {
+	s.withLock(func() {
+		s.inProgress = true
+	})
 }
 
 func (s *Game) OrderedPlayers() []*Player {
@@ -63,7 +74,7 @@ func (s *Game) withLock(fn func()) {
 	fn()
 }
 
-func (s *Game) AddPlayer() *Player {
+func (s *Game) AddPlayer(isHost bool) *Player {
 	var player *Player
 	s.withLock(func() {
 		maxTurnOrder := 0
@@ -72,13 +83,7 @@ func (s *Game) AddPlayer() *Player {
 				maxTurnOrder = p.TurnOrder
 			}
 		}
-		player = &Player{
-			Name:       generaterandom.Name(),
-			Count:      0,
-			TurnOrder:  maxTurnOrder + 1,
-			UpdateChan: make(chan struct{}),
-		}
-
+		player = newPlayer(maxTurnOrder, isHost)
 		s.players = append(s.players, player)
 	})
 

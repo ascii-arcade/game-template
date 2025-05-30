@@ -104,26 +104,24 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	content := logo + "\n\n\n"
+	style := m.renderer.NewStyle().Width(m.Width).Height(m.Height)
+	paneStyle := m.renderer.NewStyle().Width(m.Width).Height(m.Height / 2)
+
+	optionsContent := ""
+
 	if m.isJoining {
-		content += "\nEnter the game code to join:\n\n" + m.gameCodeInput.View()
+		optionsContent += "Enter the game code to join:\n\n" + m.gameCodeInput.View()
 	} else {
-		content += "Welcome to the Game!\n\n"
-		content += "Press 'n' to create a new game.\n"
-		content += "Press 'j' to join an existing game.\n"
+		optionsContent += "Welcome to the Game!\n\n"
+		optionsContent += "Press 'n' to create a new game.\n"
+		optionsContent += "Press 'j' to join an existing game.\n"
 	}
 
-	style := m.renderer.NewStyle().
-		Width(m.Width).
-		Height(m.Height)
-
-	return style.Render(
-		lipgloss.Place(
-			m.Width,
-			m.Height,
-			lipgloss.Center,
-			lipgloss.Center,
-			content,
-		),
+	panes := lipgloss.JoinVertical(
+		lipgloss.Center,
+		paneStyle.MarginBottom(2).Align(lipgloss.Center, lipgloss.Bottom).Render(logo),
+		paneStyle.Align(lipgloss.Center, lipgloss.Top).Render(optionsContent),
 	)
+
+	return style.Render(panes)
 }
