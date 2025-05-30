@@ -2,7 +2,7 @@ package games
 
 func (s *Game) Count(pName string) {
 	s.withLock(func() {
-		if player, exists := s.Players[pName]; exists {
+		if player, exists := s.getPlayer(pName); exists {
 			player.Count++
 		}
 	})
