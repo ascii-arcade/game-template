@@ -13,8 +13,6 @@ func (l tableScreen) Update(m *Model, msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 	case "a":
 		m.gameState().Count(m.Player.Name)
-	case "q":
-		m.screen = lobbyScreen{}
 	}
 
 	return m, nil
@@ -28,6 +26,5 @@ func (l tableScreen) View(m *Model) string {
 
 	return m.renderer.NewStyle().Render(fmt.Sprintf("You are %s", m.Player.Name)) +
 		"\n\n" + counts +
-		"\n\n'" + m.Game.Code + "'" +
-		"\n\n" + m.renderer.NewStyle().Render("Press 'q' to quit")
+		"\n\n" + m.renderer.NewStyle().Render("Press 'ctrl+c' to quit")
 }

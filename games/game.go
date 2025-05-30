@@ -14,8 +14,9 @@ var games = make(map[string]*Game)
 type Game struct {
 	Code string
 
-	mu      sync.Mutex
-	players []*Player
+	inProgress bool
+	mu         sync.Mutex
+	players    []*Player
 }
 
 func New() *Game {
@@ -31,6 +32,16 @@ func New() *Game {
 func Get(code string) (*Game, bool) {
 	game, exists := games[code]
 	return game, exists
+}
+
+func (s *Game) InProgress() bool {
+	return s.inProgress
+}
+
+func (s *Game) Begin() {
+	s.withLock(func() {
+		s.inProgress = true
+	})
 }
 
 func (s *Game) OrderedPlayers() []*Player {

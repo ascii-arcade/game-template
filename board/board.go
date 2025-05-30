@@ -29,7 +29,7 @@ func NewModel(width, height int, renderer *lipgloss.Renderer) Model {
 		Width:    width,
 		Height:   height,
 		renderer: renderer,
-		screen:   lobbyScreen{},
+		screen:   tableScreen{},
 	}
 }
 
@@ -48,7 +48,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.gameState().RemovePlayer(m.Player.Name)
 			return m, tea.Quit
 		default:
-			return m.screen.Update(&m, msg)
+			return m.activeScreen().Update(&m, msg)
 		}
 
 	case messages.RefreshGame:
@@ -59,7 +59,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	return m.screen.View(&m)
+	return m.activeScreen().View(&m)
 }
 
 func (m *Model) gameState() *games.Game {
@@ -68,6 +68,14 @@ func (m *Model) gameState() *games.Game {
 		log.Fatal("Game does not exist", "code", m.Game.Code)
 	}
 	return game
+}
+
+func (m *Model) activeScreen() screen {
+	if m.gameState().InProgress() {
+		return m.screen
+	} else {
+		return lobbyScreen{}
+	}
 }
 
 func waitForRefreshSignal(ch chan struct{}) tea.Cmd {
