@@ -82,15 +82,13 @@ func (m *Model) newGame() error {
 }
 
 func (m *Model) joinGame(code string) error {
-	updateCh := make(chan struct{})
-
 	game, ok := games.Get(code)
 	if !ok {
 		return errors.New("game does not exist")
 	}
 	m.board.Game = game
 
-	player := game.AddPlayer(updateCh)
+	player := game.AddPlayer()
 	m.board.Player = player
 
 	return nil
