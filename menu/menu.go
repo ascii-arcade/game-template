@@ -1,9 +1,6 @@
 package menu
 
 import (
-	"strings"
-
-	"github.com/ascii-arcade/wish-template/messages"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -24,12 +21,19 @@ const logo = `++----------------------------------------------------------------
 ++------------------------------------------------------------------------------++
 ++------------------------------------------------------------------------------++`
 
+type screen interface {
+	setModel(*Model)
+	Update(tea.KeyMsg) (tea.Model, tea.Cmd)
+	View() string
+}
+
 type Model struct {
 	Width    int
 	Height   int
 	renderer *lipgloss.Renderer
+	screen   screen
 
-	isJoining     bool
+	isSplashing   bool
 	gameCodeInput textinput.Model
 }
 
@@ -42,8 +46,8 @@ func NewModel(width, height int, renderer *lipgloss.Renderer) Model {
 		Width:    width,
 		Height:   height,
 		renderer: renderer,
+		screen:   &optionScreen{},
 
-		isJoining:     false,
 		gameCodeInput: ti,
 	}
 }
@@ -53,50 +57,16 @@ func (m Model) Init() tea.Cmd {
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var cmd tea.Cmd
+	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.Height, m.Width = msg.Height, msg.Width
 
-	if m.isJoining {
-		switch msg := msg.(type) {
-		case tea.KeyMsg:
-			switch msg.Type {
-			case tea.KeyCtrlC:
-				return m, tea.Quit
-			case tea.KeyEsc:
-				m.isJoining = false
-				return m, nil
-			case tea.KeyEnter:
-				if len(m.gameCodeInput.Value()) == 7 {
-					code := strings.ToUpper(m.gameCodeInput.Value())
-					return m, func() tea.Msg { return messages.JoinGame{GameCode: code} }
-				}
-			default:
-				val := m.gameCodeInput.Value()
-				if len(val) == 3 && msg.Type == tea.KeyRunes && msg.Runes[0] != '-' {
-					val = val + "-"
-					m.gameCodeInput.SetValue(val)
-					m.gameCodeInput.CursorEnd()
-				}
-			}
-
-			m.gameCodeInput, cmd = m.gameCodeInput.Update(msg)
-			return m, cmd
-		}
-	} else {
-		switch msg := msg.(type) {
-		case tea.WindowSizeMsg:
-			m.Height, m.Width = msg.Height, msg.Width
-
-		case tea.KeyMsg:
-			switch msg.String() {
-			case "n":
-				return m, func() tea.Msg { return messages.NewGame{} }
-			case "j":
-				m.isJoining = true
-				m.gameCodeInput.Focus()
-				m.gameCodeInput.SetValue("")
-			case "q", "ctrl+c":
-				return m, tea.Quit
-			}
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "ctrl+c":
+			return m, tea.Quit
+		default:
+			return m.activeScreen().Update(msg)
 		}
 	}
 
@@ -104,24 +74,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	style := m.renderer.NewStyle().Width(m.Width).Height(m.Height)
-	paneStyle := m.renderer.NewStyle().Width(m.Width).Height(m.Height / 2)
+	return m.activeScreen().View()
+}
 
-	optionsContent := ""
-
-	if m.isJoining {
-		optionsContent += "Enter the game code to join:\n\n" + m.gameCodeInput.View()
-	} else {
-		optionsContent += "Welcome to the Game!\n\n"
-		optionsContent += "Press 'n' to create a new game.\n"
-		optionsContent += "Press 'j' to join an existing game.\n"
-	}
-
-	panes := lipgloss.JoinVertical(
-		lipgloss.Center,
-		paneStyle.MarginBottom(2).Align(lipgloss.Center, lipgloss.Bottom).Render(logo),
-		paneStyle.Align(lipgloss.Center, lipgloss.Top).Render(optionsContent),
-	)
-
-	return style.Render(panes)
+func (m *Model) activeScreen() screen {
+	m.screen.setModel(m)
+	return m.screen
 }
