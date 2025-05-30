@@ -74,7 +74,7 @@ func (s *Game) withLock(fn func()) {
 	fn()
 }
 
-func (s *Game) AddPlayer() *Player {
+func (s *Game) AddPlayer(isHost bool) *Player {
 	var player *Player
 	s.withLock(func() {
 		maxTurnOrder := 0
@@ -83,13 +83,7 @@ func (s *Game) AddPlayer() *Player {
 				maxTurnOrder = p.TurnOrder
 			}
 		}
-		player = &Player{
-			Name:       generaterandom.Name(),
-			Count:      0,
-			TurnOrder:  maxTurnOrder + 1,
-			UpdateChan: make(chan struct{}),
-		}
-
+		player = newPlayer(maxTurnOrder, isHost)
 		s.players = append(s.players, player)
 	})
 

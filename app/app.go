@@ -41,7 +41,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	case messages.JoinGame:
-		err := m.joinGame(msg.GameCode)
+		err := m.joinGame(msg.GameCode, false)
 		if err == nil {
 			m.active = m.board
 			m.board.Init()
@@ -78,17 +78,17 @@ func TeaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 func (m *Model) newGame() error {
 	newGame := games.New()
 	m.board.Game = newGame
-	return m.joinGame(newGame.Code)
+	return m.joinGame(newGame.Code, true)
 }
 
-func (m *Model) joinGame(code string) error {
+func (m *Model) joinGame(code string, isNew bool) error {
 	game, ok := games.Get(code)
 	if !ok {
 		return errors.New("game does not exist")
 	}
 	m.board.Game = game
 
-	player := game.AddPlayer()
+	player := game.AddPlayer(isNew)
 	m.board.Player = player
 
 	return nil
