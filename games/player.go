@@ -7,3 +7,7 @@ type Player struct {
 
 	UpdateChan chan struct{}
 }
+
+func (p *Player) incrementCount() {
+	p.Count++
+}
