@@ -1,0 +1,11 @@
+services:
+  wish-template:
+    build: .
+    ports:
+      - "23234:23234"
+    restart: always
+    volumes:
+      - ssh:/app/.ssh
+
+volumes:
+  ssh:
