@@ -6,7 +6,7 @@ import (
 
 	"slices"
 
-	generaterandom "github.com/ascii-arcade/wish-template/generate_random"
+	"github.com/ascii-arcade/wish-template/generaterandom"
 )
 
 var games = make(map[string]*Game)

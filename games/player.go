@@ -1,6 +1,6 @@
 package games
 
-import generaterandom "github.com/ascii-arcade/wish-template/generate_random"
+import "github.com/ascii-arcade/wish-template/generaterandom"
 
 type Player struct {
 	Name      string
