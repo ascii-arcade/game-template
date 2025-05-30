@@ -1,6 +1,8 @@
 package menu
 
 import (
+	"time"
+
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -27,6 +29,8 @@ type screen interface {
 	View() string
 }
 
+type doneMsg struct{}
+
 type Model struct {
 	Width    int
 	Height   int
@@ -46,20 +50,29 @@ func NewModel(width, height int, renderer *lipgloss.Renderer) Model {
 		Width:    width,
 		Height:   height,
 		renderer: renderer,
-		screen:   &optionScreen{},
+		screen:   &splashScreen{},
 
 		gameCodeInput: ti,
 	}
 }
 
 func (m Model) Init() tea.Cmd {
-	return textinput.Blink
+	return tea.Batch(
+		tea.Tick(time.Second, func(t time.Time) tea.Msg {
+			return doneMsg{}
+		}),
+		tea.WindowSize(),
+		textinput.Blink,
+	)
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.Height, m.Width = msg.Height, msg.Width
+
+	case doneMsg:
+		m.screen = &optionScreen{}
 
 	case tea.KeyMsg:
 		switch msg.String() {
