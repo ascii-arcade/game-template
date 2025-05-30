@@ -46,7 +46,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c":
-			m.gameState().RemovePlayer(m.Player.Name)
+			m.getGame().RemovePlayer(m.Player.Name)
 			return m, tea.Quit
 		default:
 			return m.activeScreen().update(msg)
@@ -63,7 +63,7 @@ func (m Model) View() string {
 	return m.activeScreen().view()
 }
 
-func (m *Model) gameState() *games.Game {
+func (m *Model) getGame() *games.Game {
 	game, exists := games.Get(m.Game.Code)
 	if !exists {
 		log.Fatal("Game does not exist", "code", m.Game.Code)
@@ -72,7 +72,7 @@ func (m *Model) gameState() *games.Game {
 }
 
 func (m *Model) activeScreen() screen {
-	if m.gameState().InProgress() {
+	if m.getGame().InProgress() {
 		m.screen.setModel(m)
 		return m.screen
 	} else {
