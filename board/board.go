@@ -9,7 +9,7 @@ import (
 
 type screen interface {
 	setModel(*Model)
-	update(tea.KeyMsg) (tea.Model, tea.Cmd)
+	update(tea.Msg) (tea.Model, tea.Cmd)
 	view() string
 }
 
@@ -48,12 +48,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			m.Game.RemovePlayer(m.Player.Name)
 			return m, tea.Quit
-		default:
-			return m.activeScreen().update(msg)
 		}
 
-	case messages.RefreshGame:
+	case messages.RefreshBoard:
 		return m, waitForRefreshSignal(m.Player.UpdateChan)
+
+	default:
+		return m.activeScreen().update(msg)
 	}
 
 	return m, nil
@@ -73,6 +74,6 @@ func (m *Model) activeScreen() screen {
 
 func waitForRefreshSignal(ch chan struct{}) tea.Cmd {
 	return func() tea.Msg {
-		return messages.RefreshGame(<-ch)
+		return messages.RefreshBoard(<-ch)
 	}
 }
