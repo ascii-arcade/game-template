@@ -3,6 +3,7 @@ package menu
 import (
 	"strings"
 
+	"github.com/ascii-arcade/wish-template/games"
 	"github.com/ascii-arcade/wish-template/messages"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -33,9 +34,15 @@ func (s *joinScreen) update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "enter":
 		if len(s.model.gameCodeInput.Value()) == 7 {
 			code := strings.ToUpper(s.model.gameCodeInput.Value())
+			_, exists := games.Get(code)
+			if !exists {
+				s.model.setError("Game code not found. Please try again.")
+				return s.model, nil
+			}
 			return s.model, func() tea.Msg { return messages.JoinGame{GameCode: code} }
 		}
 	default:
+		s.model.clearError()
 		val := s.model.gameCodeInput.Value()
 		if len(val) == 3 && msg.Type == tea.KeyRunes && msg.Runes[0] != '-' {
 			val = val + "-"
@@ -58,7 +65,7 @@ func (s *joinScreen) view() string {
 	panes := lipgloss.JoinVertical(
 		lipgloss.Center,
 		paneStyle.MarginBottom(2).Align(lipgloss.Center, lipgloss.Bottom).Render(logo),
-		paneStyle.Align(lipgloss.Center, lipgloss.Top).Render(content),
+		paneStyle.Align(lipgloss.Center, lipgloss.Top).Render(content+"\n\n"+s.style.Foreground(ErrorColor).Render(s.model.error)),
 	)
 
 	return style.Render(panes)
