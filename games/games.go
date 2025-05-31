@@ -38,12 +38,6 @@ func (s *Game) InProgress() bool {
 	return s.inProgress
 }
 
-func (s *Game) Begin() {
-	s.withLock(func() {
-		s.inProgress = true
-	})
-}
-
 func (s *Game) OrderedPlayers() []*Player {
 	var players []*Player
 	for _, p := range s.players {
