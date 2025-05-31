@@ -19,11 +19,7 @@ func (m *Model) newTableScreen() *tableScreen {
 	}
 }
 
-func (s *tableScreen) setModel(model *Model) {
-	s.model = model
-}
-
-func (s *tableScreen) update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (s *tableScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -38,7 +34,7 @@ func (s *tableScreen) update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return s.model, nil
 }
 
-func (s *tableScreen) view() string {
+func (s *tableScreen) View() string {
 	counts := ""
 	for _, p := range s.model.Game.OrderedPlayers() {
 		counts += fmt.Sprintf("%s: %d\n", p.Name, p.Count)

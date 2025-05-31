@@ -77,8 +77,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			return m, tea.Quit
 		default:
-			screenMsg, cmd := m.screen.Update(msg)
-			return screenMsg.(*Model), cmd
+			screenModel, cmd := m.screen.Update(msg)
+			return screenModel.(*Model), cmd
 		}
 	}
 

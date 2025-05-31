@@ -3,20 +3,15 @@ package board
 import (
 	"github.com/ascii-arcade/wish-template/games"
 	"github.com/ascii-arcade/wish-template/messages"
+	"github.com/ascii-arcade/wish-template/screen"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
 
-type screen interface {
-	setModel(*Model)
-	update(tea.Msg) (tea.Model, tea.Cmd)
-	view() string
-}
-
 type Model struct {
 	Width  int
 	Height int
-	screen screen
+	screen screen.Screen
 	style  lipgloss.Style
 
 	Player *games.Player
@@ -47,17 +42,18 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, waitForRefreshSignal(m.Player.UpdateChan)
 
 	default:
-		return m.activeScreen().update(msg)
+		activeScreenModel, cmd := m.activeScreen().Update(msg)
+		return activeScreenModel.(*Model), cmd
 	}
 
 	return m, nil
 }
 
 func (m Model) View() string {
-	return m.activeScreen().view()
+	return m.activeScreen().View()
 }
 
-func (m *Model) activeScreen() screen {
+func (m *Model) activeScreen() screen.Screen {
 	if m.Game.InProgress() {
 		return m.newTableScreen()
 	} else {
