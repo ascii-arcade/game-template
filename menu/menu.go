@@ -25,7 +25,7 @@ const logo = `++----------------------------------------------------------------
 
 type screen interface {
 	setModel(*Model)
-	update(tea.KeyMsg) (tea.Model, tea.Cmd)
+	update(tea.Msg) (tea.Model, tea.Cmd)
 	view() string
 }
 

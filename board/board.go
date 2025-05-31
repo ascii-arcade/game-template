@@ -43,13 +43,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.Height, m.Width = msg.Height, msg.Width
 
-	case tea.KeyMsg:
-		switch msg.String() {
-		case "ctrl+c":
-			m.Game.RemovePlayer(m.Player.Name)
-			return m, tea.Quit
-		}
-
 	case messages.RefreshBoard:
 		return m, waitForRefreshSignal(m.Player.UpdateChan)
 

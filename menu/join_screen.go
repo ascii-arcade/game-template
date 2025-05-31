@@ -26,29 +26,32 @@ func (s *joinScreen) setModel(model *Model) {
 	s.model = model
 }
 
-func (s *joinScreen) update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+func (s *joinScreen) update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
-	switch msg.String() {
-	case "esc":
-		s.model.screen = s.model.newOptionScreen()
-	case "enter":
-		if len(s.model.gameCodeInput.Value()) == 7 {
-			code := strings.ToUpper(s.model.gameCodeInput.Value())
-			_, exists := games.Get(code)
-			if !exists {
-				s.model.setError("Game code not found. Please try again.")
-				return s.model, nil
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "esc":
+			s.model.screen = s.model.newOptionScreen()
+		case "enter":
+			if len(s.model.gameCodeInput.Value()) == 7 {
+				code := strings.ToUpper(s.model.gameCodeInput.Value())
+				_, exists := games.Get(code)
+				if !exists {
+					s.model.setError("Game code not found. Please try again.")
+					return s.model, nil
+				}
+				return s.model, func() tea.Msg { return messages.JoinGame{GameCode: code} }
 			}
-			return s.model, func() tea.Msg { return messages.JoinGame{GameCode: code} }
-		}
-	default:
-		s.model.clearError()
-		val := s.model.gameCodeInput.Value()
-		if len(val) == 3 && msg.Type == tea.KeyRunes && msg.Runes[0] != '-' {
-			val = val + "-"
-			s.model.gameCodeInput.SetValue(val)
-			s.model.gameCodeInput.CursorEnd()
+		default:
+			s.model.clearError()
+			val := s.model.gameCodeInput.Value()
+			if len(val) == 3 && msg.Type == tea.KeyRunes && msg.Runes[0] != '-' {
+				val = val + "-"
+				s.model.gameCodeInput.SetValue(val)
+				s.model.gameCodeInput.CursorEnd()
+			}
 		}
 	}
 

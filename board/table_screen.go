@@ -29,6 +29,9 @@ func (s *tableScreen) update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "a":
 			s.model.Game.Count(s.model.Player.Name)
+		case "ctrl+c":
+			s.model.Game.RemovePlayer(s.model.Player.Name)
+			return s.model, tea.Quit
 		}
 	}
 
