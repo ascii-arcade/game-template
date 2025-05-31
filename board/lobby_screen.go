@@ -1,6 +1,7 @@
 package board
 
 import (
+	"github.com/ascii-arcade/wish-template/screen"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -17,11 +18,12 @@ func (m *Model) newLobbyScreen() *lobbyScreen {
 	}
 }
 
-func (s *lobbyScreen) setModel(model *Model) {
-	s.model = model
+func (s *lobbyScreen) WithModel(model any) screen.Screen {
+	s.model = model.(*Model)
+	return s
 }
 
-func (s *lobbyScreen) update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (s *lobbyScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -35,7 +37,7 @@ func (s *lobbyScreen) update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return s.model, nil
 }
 
-func (s *lobbyScreen) view() string {
+func (s *lobbyScreen) View() string {
 	style := s.style.Width(s.model.Width / 3)
 
 	footer := "\nWaiting for host to start the game..."

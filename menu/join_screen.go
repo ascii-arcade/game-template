@@ -6,6 +6,7 @@ import (
 	"github.com/ascii-arcade/wish-template/colors"
 	"github.com/ascii-arcade/wish-template/games"
 	"github.com/ascii-arcade/wish-template/messages"
+	"github.com/ascii-arcade/wish-template/screen"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -16,24 +17,31 @@ type joinScreen struct {
 }
 
 func (m *Model) newJoinScreen() *joinScreen {
+	m.gameCodeInput.Focus()
+	m.gameCodeInput.SetValue("")
 	return &joinScreen{
 		model: m,
 		style: m.style,
 	}
 }
 
-func (s *joinScreen) setModel(model *Model) {
-	s.model = model
+func (s *joinScreen) WithModel(model any) screen.Screen {
+	s.model = model.(*Model)
+	return s
 }
 
-func (s *joinScreen) update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (s *joinScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "esc":
-			s.model.screen = s.model.newOptionScreen()
+			return s.model, func() tea.Msg {
+				return messages.SwitchScreenMsg{
+					Screen: s.model.newOptionScreen(),
+				}
+			}
 		case "enter":
 			if len(s.model.gameCodeInput.Value()) == 7 {
 				code := strings.ToUpper(s.model.gameCodeInput.Value())
@@ -56,11 +64,10 @@ func (s *joinScreen) update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	s.model.gameCodeInput, cmd = s.model.gameCodeInput.Update(msg)
-
 	return s.model, cmd
 }
 
-func (s *joinScreen) view() string {
+func (s *joinScreen) View() string {
 	style := s.style.Width(s.model.Width).Height(s.model.Height)
 	paneStyle := s.model.style.Width(s.model.Width).Height(s.model.Height / 2)
 

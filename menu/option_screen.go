@@ -2,6 +2,7 @@ package menu
 
 import (
 	"github.com/ascii-arcade/wish-template/messages"
+	"github.com/ascii-arcade/wish-template/screen"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -18,27 +19,30 @@ func (m *Model) newOptionScreen() *optionScreen {
 	}
 }
 
-func (s *optionScreen) setModel(model *Model) {
-	s.model = model
+func (s *optionScreen) WithModel(model any) screen.Screen {
+	s.model = model.(*Model)
+	return s
 }
 
-func (s *optionScreen) update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (s *optionScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "n":
 			return s.model, func() tea.Msg { return messages.NewGame{} }
 		case "j":
-			s.model.screen = s.model.newJoinScreen()
-			s.model.gameCodeInput.Focus()
-			s.model.gameCodeInput.SetValue("")
+			return s.model, func() tea.Msg {
+				return messages.SwitchScreenMsg{
+					Screen: s.model.newJoinScreen(),
+				}
+			}
 		}
 	}
 
 	return s.model, nil
 }
 
-func (s *optionScreen) view() string {
+func (s *optionScreen) View() string {
 	style := s.style.Width(s.model.Width).Height(s.model.Height)
 	paneStyle := s.style.Width(s.model.Width).Height(s.model.Height / 2)
 
