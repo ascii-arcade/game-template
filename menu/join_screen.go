@@ -22,11 +22,7 @@ func (m *Model) newJoinScreen() *joinScreen {
 	}
 }
 
-func (s *joinScreen) setModel(model *Model) {
-	s.model = model
-}
-
-func (s *joinScreen) update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (s *joinScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
@@ -60,7 +56,7 @@ func (s *joinScreen) update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return s.model, cmd
 }
 
-func (s *joinScreen) view() string {
+func (s *joinScreen) View() string {
 	style := s.style.Width(s.model.Width).Height(s.model.Height)
 	paneStyle := s.model.style.Width(s.model.Width).Height(s.model.Height / 2)
 

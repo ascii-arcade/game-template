@@ -3,6 +3,7 @@ package menu
 import (
 	"time"
 
+	"github.com/ascii-arcade/wish-template/screen"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -23,18 +24,12 @@ const logo = `++----------------------------------------------------------------
 ++------------------------------------------------------------------------------++
 ++------------------------------------------------------------------------------++`
 
-type screen interface {
-	setModel(*Model)
-	update(tea.Msg) (tea.Model, tea.Cmd)
-	view() string
-}
-
 type doneMsg struct{}
 
 type Model struct {
 	Width  int
 	Height int
-	screen screen
+	screen screen.Screen
 	style  lipgloss.Style
 
 	error         string
@@ -82,7 +77,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			return m, tea.Quit
 		default:
-			return m.screen.update(msg)
+			screenMsg, cmd := m.screen.Update(msg)
+			return screenMsg.(*Model), cmd
 		}
 	}
 
@@ -90,7 +86,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	return m.screen.view()
+	return m.screen.View()
 }
 
 func (m *Model) setError(err string) {

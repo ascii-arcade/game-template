@@ -32,15 +32,11 @@ func (m *Model) newSplashScreen() *splashScreen {
 	}
 }
 
-func (s *splashScreen) setModel(model *Model) {
-	s.model = model
-}
-
-func (s *splashScreen) update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (s *splashScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	return s.model, nil
 }
 
-func (s *splashScreen) view() string {
+func (s *splashScreen) View() string {
 	style := s.style.
 		Width(s.model.Width).
 		Height(s.model.Height)

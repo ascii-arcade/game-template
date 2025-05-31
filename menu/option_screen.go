@@ -18,11 +18,7 @@ func (m *Model) newOptionScreen() *optionScreen {
 	}
 }
 
-func (s *optionScreen) setModel(model *Model) {
-	s.model = model
-}
-
-func (s *optionScreen) update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (s *optionScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -38,7 +34,7 @@ func (s *optionScreen) update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return s.model, nil
 }
 
-func (s *optionScreen) view() string {
+func (s *optionScreen) View() string {
 	style := s.style.Width(s.model.Width).Height(s.model.Height)
 	paneStyle := s.style.Width(s.model.Width).Height(s.model.Height / 2)
 
