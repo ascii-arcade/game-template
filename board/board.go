@@ -14,22 +14,24 @@ type screen interface {
 }
 
 type Model struct {
-	Width    int
-	Height   int
-	renderer *lipgloss.Renderer
-	screen   screen
+	Width  int
+	Height int
+	screen screen
+	style  lipgloss.Style
 
 	Player *games.Player
 	Game   *games.Game
 }
 
-func NewModel(width, height int, renderer *lipgloss.Renderer) Model {
-	return Model{
-		Width:    width,
-		Height:   height,
-		renderer: renderer,
-		screen:   &tableScreen{},
+func NewModel(width, height int, style lipgloss.Style) Model {
+	m := Model{
+		Width:  width,
+		Height: height,
+		style:  style,
 	}
+
+	m.screen = m.newTableScreen()
+	return m
 }
 
 func (m Model) Init() tea.Cmd {
@@ -63,10 +65,9 @@ func (m Model) View() string {
 
 func (m *Model) activeScreen() screen {
 	if m.Game.InProgress() {
-		m.screen.setModel(m)
-		return m.screen
+		return m.newTableScreen()
 	} else {
-		return &lobbyScreen{model: m}
+		return m.newLobbyScreen()
 	}
 }
 

@@ -65,10 +65,11 @@ func (m Model) View() string {
 func TeaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 	pty, _, _ := s.Pty()
 	renderer := bubbletea.MakeRenderer(s)
+	style := renderer.NewStyle()
 
 	m := Model{
-		board: board.NewModel(pty.Window.Width, pty.Window.Height, renderer),
-		menu:  menu.NewModel(pty.Window.Width, pty.Window.Height, renderer),
+		board: board.NewModel(pty.Window.Width, pty.Window.Height, style),
+		menu:  menu.NewModel(pty.Window.Width, pty.Window.Height, style),
 	}
 	m.active = m.menu
 

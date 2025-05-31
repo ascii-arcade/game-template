@@ -7,6 +7,14 @@ import (
 
 type lobbyScreen struct {
 	model *Model
+	style lipgloss.Style
+}
+
+func (m *Model) newLobbyScreen() *lobbyScreen {
+	return &lobbyScreen{
+		model: m,
+		style: m.style,
+	}
 }
 
 func (s *lobbyScreen) setModel(model *Model) {
@@ -17,7 +25,6 @@ func (s *lobbyScreen) update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 	case "s":
 		if s.model.Player.IsHost() {
-			s.model.screen = &tableScreen{}
 			s.model.Game.Begin()
 		}
 	}
@@ -26,7 +33,7 @@ func (s *lobbyScreen) update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 }
 
 func (s *lobbyScreen) view() string {
-	style := s.model.renderer.NewStyle().Width(s.model.Width / 3)
+	style := s.style.Width(s.model.Width / 3)
 
 	footer := "\nWaiting for host to start the game..."
 	if s.model.Player.IsHost() {
@@ -35,7 +42,7 @@ func (s *lobbyScreen) view() string {
 	footer += "\nPress 'ctrl+c' to quit."
 
 	header := s.model.Game.Code
-	playerList := s.model.renderer.NewStyle().Render(s.playerList())
+	playerList := s.style.Render(s.playerList())
 
 	content := lipgloss.JoinVertical(
 		lipgloss.Left,
@@ -44,13 +51,13 @@ func (s *lobbyScreen) view() string {
 		style.Render(footer),
 	)
 
-	return s.model.renderer.NewStyle().Width(s.model.Width).Height(s.model.Height).Render(
+	return s.style.Width(s.model.Width).Height(s.model.Height).Render(
 		lipgloss.Place(
 			s.model.Width,
 			s.model.Height,
 			lipgloss.Center,
 			lipgloss.Center,
-			s.model.renderer.NewStyle().
+			s.style.
 				Padding(2, 2).
 				BorderStyle(lipgloss.NormalBorder()).
 				Render(content),
