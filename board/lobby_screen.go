@@ -21,11 +21,14 @@ func (s *lobbyScreen) setModel(model *Model) {
 	s.model = model
 }
 
-func (s *lobbyScreen) update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
-	switch msg.String() {
-	case "s":
-		if s.model.Player.IsHost() {
-			s.model.Game.Begin()
+func (s *lobbyScreen) update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "s":
+			if s.model.Player.IsHost() {
+				s.model.Game.Begin()
+			}
 		}
 	}
 

@@ -8,5 +8,5 @@ type (
 	SwitchViewMsg struct{ Model tea.Model }
 	NewGame       struct{}
 	JoinGame      struct{ GameCode string }
-	RefreshGame   struct{}
+	RefreshBoard  struct{}
 )
