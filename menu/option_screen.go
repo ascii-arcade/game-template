@@ -22,14 +22,17 @@ func (s *optionScreen) setModel(model *Model) {
 	s.model = model
 }
 
-func (s *optionScreen) update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
-	switch msg.String() {
-	case "n":
-		return s.model, func() tea.Msg { return messages.NewGame{} }
-	case "j":
-		s.model.screen = s.model.newJoinScreen()
-		s.model.gameCodeInput.Focus()
-		s.model.gameCodeInput.SetValue("")
+func (s *optionScreen) update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "n":
+			return s.model, func() tea.Msg { return messages.NewGame{} }
+		case "j":
+			s.model.screen = s.model.newJoinScreen()
+			s.model.gameCodeInput.Focus()
+			s.model.gameCodeInput.SetValue("")
+		}
 	}
 
 	return s.model, nil

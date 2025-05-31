@@ -36,7 +36,7 @@ func (s *splashScreen) setModel(model *Model) {
 	s.model = model
 }
 
-func (s *splashScreen) update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+func (s *splashScreen) update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return s.model, nil
 }
 
