@@ -48,6 +48,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			m.Game.RemovePlayer(m.Player.Name)
 			return m, tea.Quit
+
+		default:
+			return m.activeScreen().update(msg)
 		}
 
 	case messages.RefreshBoard:
