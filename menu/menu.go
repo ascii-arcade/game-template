@@ -8,6 +8,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+const ErrorColor = lipgloss.Color("#ff5555")
 const logo = `++------------------------------------------------------------------------------++
 ++------------------------------------------------------------------------------++
 ||                                                                              ||
@@ -37,6 +38,7 @@ type Model struct {
 	screen screen
 	style  lipgloss.Style
 
+	error         string
 	isSplashing   bool
 	gameCodeInput textinput.Model
 }
@@ -90,4 +92,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m Model) View() string {
 	return m.screen.view()
+}
+
+func (m *Model) setError(err string) {
+	m.error = err
+}
+
+func (m *Model) clearError() {
+	m.error = ""
 }
