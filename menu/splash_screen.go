@@ -1,6 +1,8 @@
 package menu
 
 import (
+	"github.com/ascii-arcade/wish-template/messages"
+	"github.com/ascii-arcade/wish-template/screen"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -32,7 +34,20 @@ func (m *Model) newSplashScreen() *splashScreen {
 	}
 }
 
+func (s *splashScreen) WithModel(model any) screen.Screen {
+	s.model = model.(*Model)
+	return s
+}
+
 func (s *splashScreen) Update(msg tea.Msg) (any, tea.Cmd) {
+	switch msg.(type) {
+	case doneMsg:
+		return s.model, func() tea.Msg {
+			return messages.SwitchScreenMsg{
+				Screen: s.model.newOptionScreen(),
+			}
+		}
+	}
 	return s.model, nil
 }
 

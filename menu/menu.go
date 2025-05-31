@@ -3,6 +3,7 @@ package menu
 import (
 	"time"
 
+	"github.com/ascii-arcade/wish-template/messages"
 	"github.com/ascii-arcade/wish-template/screen"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -33,7 +34,6 @@ type Model struct {
 	style  lipgloss.Style
 
 	error         string
-	isSplashing   bool
 	gameCodeInput textinput.Model
 }
 
@@ -68,21 +68,21 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.Height, m.Width = msg.Height, msg.Width
+		return m, nil
 
-	case doneMsg:
-		m.screen = m.newOptionScreen()
+	case messages.SwitchScreenMsg:
+		m.screen = msg.Screen.WithModel(&m)
+		return m, nil
 
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c":
 			return m, tea.Quit
-		default:
-			screenModel, cmd := m.screen.Update(msg)
-			return screenModel.(*Model), cmd
 		}
 	}
 
-	return m, nil
+	screenModel, cmd := m.screen.Update(msg)
+	return screenModel.(*Model), cmd
 }
 
 func (m Model) View() string {
