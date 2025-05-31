@@ -22,6 +22,14 @@ const splashLogo = `++----------------------------------------------------------
 
 type splashScreen struct {
 	model *Model
+	style lipgloss.Style
+}
+
+func (m *Model) newSplashScreen() *splashScreen {
+	return &splashScreen{
+		model: m,
+		style: m.style,
+	}
 }
 
 func (s *splashScreen) setModel(model *Model) {
@@ -33,7 +41,7 @@ func (s *splashScreen) update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 }
 
 func (s *splashScreen) view() string {
-	style := s.model.renderer.NewStyle().
+	style := s.style.
 		Width(s.model.Width).
 		Height(s.model.Height)
 

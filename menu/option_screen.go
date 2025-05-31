@@ -8,6 +8,14 @@ import (
 
 type optionScreen struct {
 	model *Model
+	style lipgloss.Style
+}
+
+func (m *Model) newOptionScreen() *optionScreen {
+	return &optionScreen{
+		model: m,
+		style: m.style,
+	}
 }
 
 func (s *optionScreen) setModel(model *Model) {
@@ -19,7 +27,7 @@ func (s *optionScreen) update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "n":
 		return s.model, func() tea.Msg { return messages.NewGame{} }
 	case "j":
-		s.model.screen = &joinScreen{}
+		s.model.screen = s.model.newJoinScreen()
 		s.model.gameCodeInput.Focus()
 		s.model.gameCodeInput.SetValue("")
 	}
@@ -28,8 +36,8 @@ func (s *optionScreen) update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 }
 
 func (s *optionScreen) view() string {
-	style := s.model.renderer.NewStyle().Width(s.model.Width).Height(s.model.Height)
-	paneStyle := s.model.renderer.NewStyle().Width(s.model.Width).Height(s.model.Height / 2)
+	style := s.style.Width(s.model.Width).Height(s.model.Height)
+	paneStyle := s.style.Width(s.model.Width).Height(s.model.Height / 2)
 
 	content := "Welcome to the Game!\n\n"
 	content += "Press 'n' to create a new game.\n"

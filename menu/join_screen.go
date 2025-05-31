@@ -10,6 +10,14 @@ import (
 
 type joinScreen struct {
 	model *Model
+	style lipgloss.Style
+}
+
+func (m *Model) newJoinScreen() *joinScreen {
+	return &joinScreen{
+		model: m,
+		style: m.style,
+	}
 }
 
 func (s *joinScreen) setModel(model *Model) {
@@ -21,7 +29,7 @@ func (s *joinScreen) update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 	switch msg.String() {
 	case "esc":
-		s.model.screen = &optionScreen{}
+		s.model.screen = s.model.newOptionScreen()
 	case "enter":
 		if len(s.model.gameCodeInput.Value()) == 7 {
 			code := strings.ToUpper(s.model.gameCodeInput.Value())
@@ -42,8 +50,8 @@ func (s *joinScreen) update(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 }
 
 func (s *joinScreen) view() string {
-	style := s.model.renderer.NewStyle().Width(s.model.Width).Height(s.model.Height)
-	paneStyle := s.model.renderer.NewStyle().Width(s.model.Width).Height(s.model.Height / 2)
+	style := s.style.Width(s.model.Width).Height(s.model.Height)
+	paneStyle := s.model.style.Width(s.model.Width).Height(s.model.Height / 2)
 
 	content := "Enter the game code to join:\n\n" + s.model.gameCodeInput.View()
 
