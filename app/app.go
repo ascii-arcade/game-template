@@ -85,9 +85,13 @@ func (m *Model) joinGame(code string, isNew bool) error {
 	if err != nil {
 		return err
 	}
-	m.board.Game = game
 
-	player := game.AddPlayer(isNew)
+	player, err := game.AddPlayer(isNew)
+	if err != nil {
+		return err
+	}
+
+	m.board.Game = game
 	m.board.Player = player
 
 	return nil

@@ -43,9 +43,9 @@ func (s *lobbyScreen) View() string {
 
 	footer := "\nWaiting for host to start the game..."
 	if s.model.Player.IsHost() {
-		message, ok := s.model.Game.IsPlayerCountOk()
-		if !ok {
-			footer = s.style.Foreground(colors.Error).Render(message)
+		err := s.model.Game.IsPlayerCountOk()
+		if err != nil {
+			footer = s.style.Foreground(colors.Error).Render(err.Error())
 		} else {
 			footer = "\nPress 's' to start the game."
 		}

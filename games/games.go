@@ -67,18 +67,22 @@ func (s *Game) refresh() {
 	}
 }
 
-func (s *Game) withLock(fn func()) {
+func (s *Game) withLock(fn func() error) error {
 	s.mu.Lock()
 	defer func() {
 		s.refresh()
 		s.mu.Unlock()
 	}()
-	fn()
+	return fn()
 }
 
-func (s *Game) AddPlayer(isHost bool) *Player {
+func (s *Game) AddPlayer(isHost bool) (*Player, error) {
 	var player *Player
-	s.withLock(func() {
+	err := s.withLock(func() error {
+		if s.inProgress {
+			return errors.New("game already in progress")
+		}
+
 		maxTurnOrder := 0
 		for _, p := range s.players {
 			if p.TurnOrder > maxTurnOrder {
@@ -87,13 +91,18 @@ func (s *Game) AddPlayer(isHost bool) *Player {
 		}
 		player = newPlayer(maxTurnOrder, isHost)
 		s.players = append(s.players, player)
+		return nil
 	})
 
-	return player
+	if err != nil {
+		return nil, err
+	}
+
+	return player, nil
 }
 
-func (s *Game) RemovePlayer(playerName string) {
-	s.withLock(func() {
+func (s *Game) RemovePlayer(playerName string) error {
+	err := s.withLock(func() error {
 		if player, exists := s.getPlayer(playerName); exists {
 			close(player.UpdateChan)
 			for i, p := range s.players {
@@ -107,7 +116,10 @@ func (s *Game) RemovePlayer(playerName string) {
 				delete(games, playerName)
 			}
 		}
+		return nil
 	})
+
+	return err
 }
 
 func (s *Game) getPlayer(name string) (*Player, bool) {
