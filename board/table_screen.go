@@ -49,5 +49,5 @@ func (s *tableScreen) View() string {
 
 	return s.style.Render(fmt.Sprintf("You are %s", s.model.Player.Name)) +
 		"\n\n" + counts +
-		"\n\n" + s.style.Render("Press '"+keys.ExitApplication.String()+"' to quit")
+		"\n\n" + s.style.Render("Press "+keys.ExitApplication.String(s.style)+" to quit")
 }

@@ -48,8 +48,8 @@ func (s *optionScreen) View() string {
 	paneStyle := s.style.Width(s.model.Width).Height(s.model.Height / 2)
 
 	content := "Welcome to the Game!\n\n"
-	content += "Press '" + keys.MenuStartNewGame.String() + "' to create a new game.\n"
-	content += "Press '" + keys.MenuJoinGame.String() + "' to join an existing game.\n"
+	content += "Press " + keys.MenuStartNewGame.String(s.style) + " to create a new game.\n"
+	content += "Press " + keys.MenuJoinGame.String(s.style) + " to join an existing game.\n"
 
 	panes := lipgloss.JoinVertical(
 		lipgloss.Center,

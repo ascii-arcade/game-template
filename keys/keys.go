@@ -1,6 +1,10 @@
 package keys
 
-import "slices"
+import (
+	"slices"
+
+	"github.com/charmbracelet/lipgloss"
+)
 
 type Keys []string
 
@@ -8,11 +12,11 @@ func (k Keys) Contains(msg string) bool {
 	return slices.Contains(k, msg)
 }
 
-func (k Keys) String() string {
+func (k Keys) String(style lipgloss.Style) string {
 	if len(k) == 0 {
 		return ""
 	}
-	return k[0]
+	return style.Bold(true).Italic(true).Render("'" + k[0] + "'")
 }
 
 var (
