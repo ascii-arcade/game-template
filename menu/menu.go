@@ -76,8 +76,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case tea.KeyMsg:
-		switch msg.String() {
-		case keys.ExitApplication:
+		if keys.ExitApplication.Contains(msg.String()) {
 			return m, tea.Quit
 		}
 	}

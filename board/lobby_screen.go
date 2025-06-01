@@ -28,8 +28,7 @@ func (s *lobbyScreen) WithModel(model any) screen.Screen {
 func (s *lobbyScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch msg.String() {
-		case keys.LobbyStartGame:
+		if keys.LobbyStartGame.Contains(msg.String()) {
 			if s.model.Player.IsHost() {
 				s.model.Game.Begin()
 			}
@@ -45,12 +44,12 @@ func (s *lobbyScreen) View() string {
 	footer := "\nWaiting for host to start the game..."
 	if s.model.Player.IsHost() {
 		err := s.model.Game.IsPlayerCountOk()
-		footer = "\nPress '" + keys.MenuStartNewGame + "' to start the game."
+		footer = "\nPress '" + keys.MenuStartNewGame.String() + "' to start the game."
 		if err != nil {
 			footer = s.style.Foreground(colors.Error).Render(err.Error())
 		}
 	}
-	footer += "\nPress '" + keys.ExitApplication + "' to quit."
+	footer += "\nPress '" + keys.ExitApplication.String() + "' to quit."
 
 	header := s.model.Game.Code
 	playerList := s.style.Render(s.playerList())

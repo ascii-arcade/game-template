@@ -36,14 +36,14 @@ func (s *joinScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch msg.String() {
-		case keys.PreviousScreen:
+		if keys.PreviousScreen.Contains(msg.String()) {
 			return s.model, func() tea.Msg {
 				return messages.SwitchScreenMsg{
 					Screen: s.model.newOptionScreen(),
 				}
 			}
-		case keys.Submit:
+		}
+		if keys.Submit.Contains(msg.String()) {
 			if len(s.model.gameCodeInput.Value()) == 7 {
 				code := strings.ToUpper(s.model.gameCodeInput.Value())
 				_, err := games.GetOpenGame(code)
@@ -53,14 +53,14 @@ func (s *joinScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 				}
 				return s.model, func() tea.Msg { return messages.JoinGame{GameCode: code} }
 			}
-		default:
-			s.model.clearError()
-			val := s.model.gameCodeInput.Value()
-			if len(val) == 3 && msg.Type == tea.KeyRunes && msg.Runes[0] != '-' {
-				val = val + "-"
-				s.model.gameCodeInput.SetValue(val)
-				s.model.gameCodeInput.CursorEnd()
-			}
+		}
+
+		s.model.clearError()
+		val := s.model.gameCodeInput.Value()
+		if len(val) == 3 && msg.Type == tea.KeyRunes && msg.Runes[0] != '-' {
+			val = val + "-"
+			s.model.gameCodeInput.SetValue(val)
+			s.model.gameCodeInput.CursorEnd()
 		}
 	}
 

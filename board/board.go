@@ -43,8 +43,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, waitForRefreshSignal(m.Player.UpdateChan)
 
 	case tea.KeyMsg:
-		switch msg.String() {
-		case keys.ExitApplication:
+		if keys.ExitApplication.Contains(msg.String()) {
 			return m, tea.Quit
 		}
 	}

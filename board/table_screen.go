@@ -29,10 +29,10 @@ func (s *tableScreen) WithModel(model any) screen.Screen {
 func (s *tableScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch msg.String() {
-		case keys.GameIncrementPoint:
+		if keys.GameIncrementPoint.Contains(msg.String()) {
 			s.model.Game.Count(s.model.Player.Name)
-		case keys.ExitApplication:
+		}
+		if keys.ExitApplication.Contains(msg.String()) {
 			s.model.Game.RemovePlayer(s.model.Player.Name)
 			return s.model, tea.Quit
 		}
@@ -49,5 +49,5 @@ func (s *tableScreen) View() string {
 
 	return s.style.Render(fmt.Sprintf("You are %s", s.model.Player.Name)) +
 		"\n\n" + counts +
-		"\n\n" + s.style.Render("Press '"+keys.ExitApplication+"' to quit")
+		"\n\n" + s.style.Render("Press '"+keys.ExitApplication.String()+"' to quit")
 }
