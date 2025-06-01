@@ -48,9 +48,7 @@ func (s *Game) InProgress() bool {
 
 func (s *Game) OrderedPlayers() []*Player {
 	var players []*Player
-	for _, p := range s.players {
-		players = append(players, p)
-	}
+	players = append(players, s.players...)
 	sort.Slice(players, func(i, j int) bool {
 		return players[i].TurnOrder < players[j].TurnOrder
 	})
