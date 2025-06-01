@@ -30,7 +30,7 @@ func (s *lobbyScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	case tea.KeyMsg:
 		if keys.LobbyStartGame.TriggeredBy(msg.String()) {
 			if s.model.Player.IsHost() {
-				s.model.Game.Begin()
+				_ = s.model.Game.Begin()
 			}
 		}
 	}
