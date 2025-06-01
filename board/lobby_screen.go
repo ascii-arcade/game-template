@@ -1,6 +1,7 @@
 package board
 
 import (
+	"github.com/ascii-arcade/wish-template/colors"
 	"github.com/ascii-arcade/wish-template/screen"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -42,7 +43,12 @@ func (s *lobbyScreen) View() string {
 
 	footer := "\nWaiting for host to start the game..."
 	if s.model.Player.IsHost() {
-		footer = "Press 's' to start the game."
+		message, ok := s.model.Game.IsPlayerCountOk()
+		if !ok {
+			footer = s.style.Foreground(colors.Error).Render(message)
+		} else {
+			footer = "\nPress 's' to start the game."
+		}
 	}
 	footer += "\nPress 'ctrl+c' to quit."
 
