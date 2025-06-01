@@ -7,14 +7,16 @@ import (
 
 	"github.com/ascii-arcade/wish-template/board"
 	"github.com/ascii-arcade/wish-template/games"
+	"github.com/ascii-arcade/wish-template/language"
 	"github.com/ascii-arcade/wish-template/menu"
 	"github.com/ascii-arcade/wish-template/messages"
 )
 
 type Model struct {
-	active tea.Model
-	menu   menu.Model
-	board  board.Model
+	active             tea.Model
+	menu               menu.Model
+	board              board.Model
+	languagePreference *language.LanguagePreference
 }
 
 func (m Model) Init() tea.Cmd {
@@ -64,10 +66,11 @@ func TeaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 	pty, _, _ := s.Pty()
 	renderer := bubbletea.MakeRenderer(s)
 	style := renderer.NewStyle()
+	languagePreference := language.LanguagePreference{Lang: language.Languages["EN"]}
 
 	m := Model{
-		board: board.NewModel(pty.Window.Width, pty.Window.Height, style),
-		menu:  menu.NewModel(pty.Window.Width, pty.Window.Height, style),
+		board: board.NewModel(pty.Window.Width, pty.Window.Height, style, &languagePreference),
+		menu:  menu.NewModel(pty.Window.Width, pty.Window.Height, style, &languagePreference),
 	}
 	m.active = m.menu
 

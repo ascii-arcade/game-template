@@ -30,6 +30,12 @@ func (s *optionScreen) WithModel(model any) screen.Screen {
 func (s *optionScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
+		if keys.MenuEnglish.TriggeredBy(msg.String()) {
+			s.model.languagePreference.SetLanguage("EN")
+		}
+		if keys.MenuSpanish.TriggeredBy(msg.String()) {
+			s.model.languagePreference.SetLanguage("ES")
+		}
 		if keys.MenuStartNewGame.TriggeredBy(msg.String()) {
 			return s.model, func() tea.Msg { return messages.NewGame{} }
 		}
@@ -49,9 +55,9 @@ func (s *optionScreen) View() string {
 	style := s.style.Width(s.model.Width).Height(s.model.Height)
 	paneStyle := s.style.Width(s.model.Width).Height(s.model.Height / 2)
 
-	content := s.model.lang.Get("menu", "welcome") + "\n\n"
-	content += fmt.Sprintf(s.model.lang.Get("menu", "press_to_create"), keys.MenuStartNewGame.String(s.style)) + "\n"
-	content += fmt.Sprintf(s.model.lang.Get("menu", "press_to_join"), keys.MenuJoinGame.String(s.style)) + "\n"
+	content := s.model.lang().Get("menu", "welcome") + "\n\n"
+	content += fmt.Sprintf(s.model.lang().Get("menu", "press_to_create"), keys.MenuStartNewGame.String(s.style)) + "\n"
+	content += fmt.Sprintf(s.model.lang().Get("menu", "press_to_join"), keys.MenuJoinGame.String(s.style)) + "\n"
 
 	panes := lipgloss.JoinVertical(
 		lipgloss.Center,

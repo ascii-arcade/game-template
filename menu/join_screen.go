@@ -72,7 +72,7 @@ func (s *joinScreen) View() string {
 	style := s.style.Width(s.model.Width).Height(s.model.Height)
 	paneStyle := s.model.style.Width(s.model.Width).Height(s.model.Height / 2)
 
-	content := s.model.lang.Get("menu", "enter_code") + "\n\n" + s.model.gameCodeInput.View()
+	content := s.model.lang().Get("menu", "enter_code") + "\n\n" + s.model.gameCodeInput.View()
 
 	panes := lipgloss.JoinVertical(
 		lipgloss.Center,

@@ -30,26 +30,26 @@ const logo = `++----------------------------------------------------------------
 type doneMsg struct{}
 
 type Model struct {
-	Width  int
-	Height int
-	screen screen.Screen
-	style  lipgloss.Style
-	lang   *language.Language
+	Width              int
+	Height             int
+	screen             screen.Screen
+	style              lipgloss.Style
+	languagePreference *language.LanguagePreference
 
 	error         string
 	gameCodeInput textinput.Model
 }
 
-func NewModel(width, height int, style lipgloss.Style) Model {
+func NewModel(width, height int, style lipgloss.Style, languagePreference *language.LanguagePreference) Model {
 	ti := textinput.New()
 	ti.Width = 9
 	ti.CharLimit = 7
 
 	m := Model{
-		Width:  width,
-		Height: height,
-		style:  style,
-		lang:   language.Languages["EN"],
+		Width:              width,
+		Height:             height,
+		style:              style,
+		languagePreference: languagePreference,
 
 		gameCodeInput: ti,
 	}
@@ -66,6 +66,10 @@ func (m Model) Init() tea.Cmd {
 		tea.WindowSize(),
 		textinput.Blink,
 	)
+}
+
+func (m *Model) lang() *language.Language {
+	return m.languagePreference.Lang
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {

@@ -3,6 +3,7 @@ package board
 import (
 	"github.com/ascii-arcade/wish-template/games"
 	"github.com/ascii-arcade/wish-template/keys"
+	"github.com/ascii-arcade/wish-template/language"
 	"github.com/ascii-arcade/wish-template/messages"
 	"github.com/ascii-arcade/wish-template/screen"
 	tea "github.com/charmbracelet/bubbletea"
@@ -10,20 +11,22 @@ import (
 )
 
 type Model struct {
-	Width  int
-	Height int
-	screen screen.Screen
-	style  lipgloss.Style
+	Width              int
+	Height             int
+	screen             screen.Screen
+	style              lipgloss.Style
+	languagePreference *language.LanguagePreference
 
 	Player *games.Player
 	Game   *games.Game
 }
 
-func NewModel(width, height int, style lipgloss.Style) Model {
+func NewModel(width, height int, style lipgloss.Style, languagePreference *language.LanguagePreference) Model {
 	m := Model{
-		Width:  width,
-		Height: height,
-		style:  style,
+		Width:              width,
+		Height:             height,
+		style:              style,
+		languagePreference: languagePreference,
 	}
 
 	m.screen = m.newTableScreen()
@@ -32,6 +35,10 @@ func NewModel(width, height int, style lipgloss.Style) Model {
 
 func (m Model) Init() tea.Cmd {
 	return waitForRefreshSignal(m.Player.UpdateChan)
+}
+
+func (m *Model) lang() *language.Language {
+	return m.languagePreference.Lang
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
