@@ -13,10 +13,14 @@ func (k Keys) TriggeredBy(msg string) bool {
 }
 
 func (k Keys) String(style lipgloss.Style) string {
+	return k.IndexedString(0, style)
+}
+
+func (k Keys) IndexedString(index int, style lipgloss.Style) string {
 	if len(k) == 0 {
 		return ""
 	}
-	return style.Bold(true).Italic(true).Render("'" + k[0] + "'")
+	return style.Bold(true).Italic(true).Render("'" + k[index] + "'")
 }
 
 var (
