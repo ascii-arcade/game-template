@@ -1,6 +1,8 @@
 package menu
 
 import (
+	"fmt"
+
 	"github.com/ascii-arcade/wish-template/keys"
 	"github.com/ascii-arcade/wish-template/messages"
 	"github.com/ascii-arcade/wish-template/screen"
@@ -47,9 +49,9 @@ func (s *optionScreen) View() string {
 	style := s.style.Width(s.model.Width).Height(s.model.Height)
 	paneStyle := s.style.Width(s.model.Width).Height(s.model.Height / 2)
 
-	content := "Welcome to the Game!\n\n"
-	content += "Press " + keys.MenuStartNewGame.String(s.style) + " to create a new game.\n"
-	content += "Press " + keys.MenuJoinGame.String(s.style) + " to join an existing game.\n"
+	content := s.model.lang.Get("menu", "welcome") + "\n\n"
+	content += fmt.Sprintf(s.model.lang.Get("menu", "press_to_create"), keys.MenuStartNewGame.String(s.style)) + "\n"
+	content += fmt.Sprintf(s.model.lang.Get("menu", "press_to_join"), keys.MenuJoinGame.String(s.style)) + "\n"
 
 	panes := lipgloss.JoinVertical(
 		lipgloss.Center,

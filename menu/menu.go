@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/ascii-arcade/wish-template/keys"
+	"github.com/ascii-arcade/wish-template/language"
 	"github.com/ascii-arcade/wish-template/messages"
 	"github.com/ascii-arcade/wish-template/screen"
 	"github.com/charmbracelet/bubbles/textinput"
@@ -33,6 +34,7 @@ type Model struct {
 	Height int
 	screen screen.Screen
 	style  lipgloss.Style
+	lang   *language.Language
 
 	error         string
 	gameCodeInput textinput.Model
@@ -47,6 +49,7 @@ func NewModel(width, height int, style lipgloss.Style) Model {
 		Width:  width,
 		Height: height,
 		style:  style,
+		lang:   language.Languages["EN"],
 
 		gameCodeInput: ti,
 	}
