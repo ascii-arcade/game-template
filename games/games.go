@@ -100,7 +100,7 @@ func (s *Game) AddPlayer(isHost bool) (*Player, error) {
 }
 
 func (s *Game) RemovePlayer(playerName string) error {
-	err := s.withLock(func() error {
+	return s.withLock(func() error {
 		if player, exists := s.getPlayer(playerName); exists {
 			close(player.UpdateChan)
 			for i, p := range s.players {
@@ -116,8 +116,6 @@ func (s *Game) RemovePlayer(playerName string) error {
 		}
 		return nil
 	})
-
-	return err
 }
 
 func (s *Game) getPlayer(name string) (*Player, bool) {
