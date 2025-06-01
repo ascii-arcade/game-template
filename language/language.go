@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"encoding/json"
 	"log"
+	"strings"
 )
 
 //go:embed en.json
@@ -25,7 +26,13 @@ type Language struct {
 	Translations map[string]translation `json:"translations"`
 }
 
-func (l *Language) Get(section, key string) string {
+func (l *Language) Get(path string) string {
+	parts := strings.SplitN(path, ".", 2)
+	if len(parts) != 2 {
+		return ""
+	}
+	section, key := parts[0], parts[1]
+
 	if sec, ok := l.Translations[section]; ok {
 		if val, ok := sec[key]; ok {
 			return val
@@ -36,7 +43,7 @@ func (l *Language) Get(section, key string) string {
 }
 
 func missingTranslationValue(section, key string) string {
-	return "i18n-missing:'" + section + ":" + key + "'"
+	return "i18n-missing:'" + section + "." + key + "'"
 }
 
 func LoadLanguage(data []byte) *Language {
