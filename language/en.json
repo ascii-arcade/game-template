@@ -26,10 +26,11 @@
       "press_to_join": "Press %s to join an existing game"
     },
     "board": {
-      "waiting": "Waiting for the host to start the game...",
+      "waiting_for_start": "Waiting for the host to start the game...",
       "press_to_start": "Press %s to start the game",
       "player_list_you": "you",
-      "player_list_host": "host"
+      "player_list_host": "host",
+      "you_are" : "You are %s"
     }
   }
 }

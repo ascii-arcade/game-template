@@ -36,7 +36,7 @@ type Model struct {
 	style              lipgloss.Style
 	languagePreference *language.LanguagePreference
 
-	error         string
+	errorCode     string
 	gameCodeInput textinput.Model
 }
 
@@ -97,9 +97,9 @@ func (m Model) View() string {
 }
 
 func (m *Model) setError(err string) {
-	m.error = err
+	m.errorCode = err
 }
 
 func (m *Model) clearError() {
-	m.error = ""
+	m.errorCode = ""
 }

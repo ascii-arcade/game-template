@@ -33,10 +33,10 @@ func New() *Game {
 func GetOpenGame(code string) (*Game, error) {
 	game, exists := games[code]
 	if !exists {
-		return nil, errors.New("Game not found")
+		return nil, errors.New("error.game_not_found")
 	}
 	if game.inProgress {
-		return nil, errors.New("Game already in progress")
+		return nil, errors.New("error.game_already_in_progress")
 	}
 
 	return game, nil
@@ -78,7 +78,7 @@ func (s *Game) AddPlayer(isHost bool) (*Player, error) {
 	var player *Player
 	err := s.withLock(func() error {
 		if s.inProgress {
-			return errors.New("Game already in progress")
+			return errors.New("error.game_already_in_progress")
 		}
 
 		maxTurnOrder := 0
