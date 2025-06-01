@@ -19,7 +19,7 @@
       "game_already_in_progress": "Game already in progress"
     },
     "menu": {
-      "choose_language": "Change language",
+      "choose_language": "For english, press %s",
       "enter_code": "Enter the game code to join:",
       "welcome": "Welcome to the game!",
       "press_to_create": "Press %s to create a new game",

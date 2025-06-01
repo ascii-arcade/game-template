@@ -19,7 +19,7 @@
       "game_already_in_progress": "El juego ya está en curso"
     },
     "menu": {
-      "choose_language": "Cambiar idioma",
+      "choose_language": "Para español, presiona %s",
       "enter_code": "Ingresa el código del juego para unirte:",
       "welcome": "¡Bienvenido al juego!",
       "press_to_create": "Presiona %s para crear un nuevo juego",
