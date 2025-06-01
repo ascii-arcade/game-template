@@ -1,6 +1,7 @@
 package games
 
 import (
+	"errors"
 	"sort"
 	"sync"
 
@@ -29,9 +30,16 @@ func New() *Game {
 	return game
 }
 
-func Get(code string) (*Game, bool) {
+func Get(code string) (*Game, error) {
 	game, exists := games[code]
-	return game, exists
+	if !exists {
+		return nil, errors.New("game not found")
+	}
+	if game.inProgress {
+		return nil, errors.New("game already in progress")
+	}
+
+	return game, nil
 }
 
 func (s *Game) InProgress() bool {

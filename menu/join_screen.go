@@ -45,9 +45,9 @@ func (s *joinScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 		case "enter":
 			if len(s.model.gameCodeInput.Value()) == 7 {
 				code := strings.ToUpper(s.model.gameCodeInput.Value())
-				_, exists := games.Get(code)
-				if !exists {
-					s.model.setError("Game code not found. Please try again.")
+				_, err := games.Get(code)
+				if err != nil {
+					s.model.setError(err.Error())
 					return s.model, nil
 				}
 				return s.model, func() tea.Msg { return messages.JoinGame{GameCode: code} }
