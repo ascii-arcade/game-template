@@ -28,7 +28,7 @@ func (s *lobbyScreen) WithModel(model any) screen.Screen {
 func (s *lobbyScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		if keys.LobbyStartGame.Contains(msg.String()) {
+		if keys.LobbyStartGame.TriggeredBy(msg.String()) {
 			if s.model.Player.IsHost() {
 				s.model.Game.Begin()
 			}

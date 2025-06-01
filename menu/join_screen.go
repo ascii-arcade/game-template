@@ -36,14 +36,14 @@ func (s *joinScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		if keys.PreviousScreen.Contains(msg.String()) {
+		if keys.PreviousScreen.TriggeredBy(msg.String()) {
 			return s.model, func() tea.Msg {
 				return messages.SwitchScreenMsg{
 					Screen: s.model.newOptionScreen(),
 				}
 			}
 		}
-		if keys.Submit.Contains(msg.String()) {
+		if keys.Submit.TriggeredBy(msg.String()) {
 			if len(s.model.gameCodeInput.Value()) == 7 {
 				code := strings.ToUpper(s.model.gameCodeInput.Value())
 				_, err := games.GetOpenGame(code)

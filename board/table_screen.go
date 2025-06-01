@@ -29,10 +29,10 @@ func (s *tableScreen) WithModel(model any) screen.Screen {
 func (s *tableScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		if keys.GameIncrementPoint.Contains(msg.String()) {
+		if keys.GameIncrementPoint.TriggeredBy(msg.String()) {
 			s.model.Game.Count(s.model.Player.Name)
 		}
-		if keys.ExitApplication.Contains(msg.String()) {
+		if keys.ExitApplication.TriggeredBy(msg.String()) {
 			s.model.Game.RemovePlayer(s.model.Player.Name)
 			return s.model, tea.Quit
 		}

@@ -28,10 +28,10 @@ func (s *optionScreen) WithModel(model any) screen.Screen {
 func (s *optionScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		if keys.MenuStartNewGame.Contains(msg.String()) {
+		if keys.MenuStartNewGame.TriggeredBy(msg.String()) {
 			return s.model, func() tea.Msg { return messages.NewGame{} }
 		}
-		if keys.MenuJoinGame.Contains(msg.String()) {
+		if keys.MenuJoinGame.TriggeredBy(msg.String()) {
 			return s.model, func() tea.Msg {
 				return messages.SwitchScreenMsg{
 					Screen: s.model.newJoinScreen(),

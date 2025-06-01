@@ -8,7 +8,7 @@ import (
 
 type Keys []string
 
-func (k Keys) Contains(msg string) bool {
+func (k Keys) TriggeredBy(msg string) bool {
 	return slices.Contains(k, msg)
 }
 
