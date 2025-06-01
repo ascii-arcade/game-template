@@ -1,7 +1,29 @@
 package games
 
-func (s *Game) Begin() {
-	s.withLock(func() {
+import "errors"
+
+const (
+	minimumPlayers = 2
+	maximumPlayers = 5
+)
+
+func (s *Game) Begin() error {
+	return s.withLock(func() error {
+		if error := s.IsPlayerCountOk(); error != nil {
+			return error
+		}
+
 		s.inProgress = true
+		return nil
 	})
+}
+
+func (s *Game) IsPlayerCountOk() error {
+	if len(s.players) > maximumPlayers {
+		return errors.New("Too many players")
+	}
+	if len(s.players) < minimumPlayers {
+		return errors.New("Not enough players")
+	}
+	return nil
 }

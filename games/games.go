@@ -1,6 +1,7 @@
 package games
 
 import (
+	"errors"
 	"sort"
 	"sync"
 
@@ -29,9 +30,16 @@ func New() *Game {
 	return game
 }
 
-func Get(code string) (*Game, bool) {
+func GetOpenGame(code string) (*Game, error) {
 	game, exists := games[code]
-	return game, exists
+	if !exists {
+		return nil, errors.New("Game not found")
+	}
+	if game.inProgress {
+		return nil, errors.New("Game already in progress")
+	}
+
+	return game, nil
 }
 
 func (s *Game) InProgress() bool {
@@ -40,9 +48,7 @@ func (s *Game) InProgress() bool {
 
 func (s *Game) OrderedPlayers() []*Player {
 	var players []*Player
-	for _, p := range s.players {
-		players = append(players, p)
-	}
+	players = append(players, s.players...)
 	sort.Slice(players, func(i, j int) bool {
 		return players[i].TurnOrder < players[j].TurnOrder
 	})
@@ -59,18 +65,22 @@ func (s *Game) refresh() {
 	}
 }
 
-func (s *Game) withLock(fn func()) {
+func (s *Game) withLock(fn func() error) error {
 	s.mu.Lock()
 	defer func() {
 		s.refresh()
 		s.mu.Unlock()
 	}()
-	fn()
+	return fn()
 }
 
-func (s *Game) AddPlayer(isHost bool) *Player {
+func (s *Game) AddPlayer(isHost bool) (*Player, error) {
 	var player *Player
-	s.withLock(func() {
+	err := s.withLock(func() error {
+		if s.inProgress {
+			return errors.New("Game already in progress")
+		}
+
 		maxTurnOrder := 0
 		for _, p := range s.players {
 			if p.TurnOrder > maxTurnOrder {
@@ -79,13 +89,18 @@ func (s *Game) AddPlayer(isHost bool) *Player {
 		}
 		player = newPlayer(maxTurnOrder, isHost)
 		s.players = append(s.players, player)
+		return nil
 	})
 
-	return player
+	if err != nil {
+		return nil, err
+	}
+
+	return player, nil
 }
 
-func (s *Game) RemovePlayer(playerName string) {
-	s.withLock(func() {
+func (s *Game) RemovePlayer(playerName string) error {
+	return s.withLock(func() error {
 		if player, exists := s.getPlayer(playerName); exists {
 			close(player.UpdateChan)
 			for i, p := range s.players {
@@ -99,6 +114,7 @@ func (s *Game) RemovePlayer(playerName string) {
 				delete(games, playerName)
 			}
 		}
+		return nil
 	})
 }
 

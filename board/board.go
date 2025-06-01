@@ -2,6 +2,7 @@ package board
 
 import (
 	"github.com/ascii-arcade/wish-template/games"
+	"github.com/ascii-arcade/wish-template/keys"
 	"github.com/ascii-arcade/wish-template/messages"
 	"github.com/ascii-arcade/wish-template/screen"
 	tea "github.com/charmbracelet/bubbletea"
@@ -41,12 +42,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case messages.RefreshBoard:
 		return m, waitForRefreshSignal(m.Player.UpdateChan)
 
-	default:
-		activeScreenModel, cmd := m.activeScreen().Update(msg)
-		return activeScreenModel.(*Model), cmd
+	case tea.KeyMsg:
+		if keys.ExitApplication.TriggeredBy(msg.String()) {
+			_ = m.Game.RemovePlayer(m.Player.Name)
+			return m, tea.Quit
+		}
 	}
 
-	return m, nil
+	screenModel, cmd := m.activeScreen().Update(msg)
+	return screenModel.(*Model), cmd
 }
 
 func (m Model) View() string {

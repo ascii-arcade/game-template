@@ -3,6 +3,7 @@ package menu
 import (
 	"time"
 
+	"github.com/ascii-arcade/wish-template/keys"
 	"github.com/ascii-arcade/wish-template/messages"
 	"github.com/ascii-arcade/wish-template/screen"
 	"github.com/charmbracelet/bubbles/textinput"
@@ -75,8 +76,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case tea.KeyMsg:
-		switch msg.String() {
-		case "ctrl+c":
+		if keys.ExitApplication.TriggeredBy(msg.String()) {
 			return m, tea.Quit
 		}
 	}

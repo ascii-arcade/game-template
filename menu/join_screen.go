@@ -5,6 +5,7 @@ import (
 
 	"github.com/ascii-arcade/wish-template/colors"
 	"github.com/ascii-arcade/wish-template/games"
+	"github.com/ascii-arcade/wish-template/keys"
 	"github.com/ascii-arcade/wish-template/messages"
 	"github.com/ascii-arcade/wish-template/screen"
 	tea "github.com/charmbracelet/bubbletea"
@@ -35,31 +36,31 @@ func (s *joinScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch msg.String() {
-		case "esc":
+		if keys.PreviousScreen.TriggeredBy(msg.String()) {
 			return s.model, func() tea.Msg {
 				return messages.SwitchScreenMsg{
 					Screen: s.model.newOptionScreen(),
 				}
 			}
-		case "enter":
+		}
+		if keys.Submit.TriggeredBy(msg.String()) {
 			if len(s.model.gameCodeInput.Value()) == 7 {
 				code := strings.ToUpper(s.model.gameCodeInput.Value())
-				_, exists := games.Get(code)
-				if !exists {
-					s.model.setError("Game code not found. Please try again.")
+				_, err := games.GetOpenGame(code)
+				if err != nil {
+					s.model.setError(err.Error())
 					return s.model, nil
 				}
 				return s.model, func() tea.Msg { return messages.JoinGame{GameCode: code} }
 			}
-		default:
-			s.model.clearError()
-			val := s.model.gameCodeInput.Value()
-			if len(val) == 3 && msg.Type == tea.KeyRunes && msg.Runes[0] != '-' {
-				val = val + "-"
-				s.model.gameCodeInput.SetValue(val)
-				s.model.gameCodeInput.CursorEnd()
-			}
+		}
+
+		s.model.clearError()
+		val := s.model.gameCodeInput.Value()
+		if len(val) == 3 && msg.Type == tea.KeyRunes && msg.Runes[0] != '-' {
+			val = val + "-"
+			s.model.gameCodeInput.SetValue(val)
+			s.model.gameCodeInput.CursorEnd()
 		}
 	}
 
