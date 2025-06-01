@@ -2,6 +2,7 @@ package board
 
 import (
 	"github.com/ascii-arcade/wish-template/colors"
+	"github.com/ascii-arcade/wish-template/keys"
 	"github.com/ascii-arcade/wish-template/screen"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -28,7 +29,7 @@ func (s *lobbyScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "s":
+		case keys.LobbyStartGame:
 			if s.model.Player.IsHost() {
 				s.model.Game.Begin()
 			}
@@ -47,10 +48,10 @@ func (s *lobbyScreen) View() string {
 		if err != nil {
 			footer = s.style.Foreground(colors.Error).Render(err.Error())
 		} else {
-			footer = "\nPress 's' to start the game."
+			footer = "\nPress '" + keys.MenuStartNewGame + "' to start the game."
 		}
 	}
-	footer += "\nPress 'ctrl+c' to quit."
+	footer += "\nPress '" + keys.ExitApplication + "' to quit."
 
 	header := s.model.Game.Code
 	playerList := s.style.Render(s.playerList())

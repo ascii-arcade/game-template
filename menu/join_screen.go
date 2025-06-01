@@ -5,6 +5,7 @@ import (
 
 	"github.com/ascii-arcade/wish-template/colors"
 	"github.com/ascii-arcade/wish-template/games"
+	"github.com/ascii-arcade/wish-template/keys"
 	"github.com/ascii-arcade/wish-template/messages"
 	"github.com/ascii-arcade/wish-template/screen"
 	tea "github.com/charmbracelet/bubbletea"
@@ -36,13 +37,13 @@ func (s *joinScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "esc":
+		case keys.PreviousScreen:
 			return s.model, func() tea.Msg {
 				return messages.SwitchScreenMsg{
 					Screen: s.model.newOptionScreen(),
 				}
 			}
-		case "enter":
+		case keys.Submit:
 			if len(s.model.gameCodeInput.Value()) == 7 {
 				code := strings.ToUpper(s.model.gameCodeInput.Value())
 				_, err := games.GetOpenGame(code)

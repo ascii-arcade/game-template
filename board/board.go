@@ -2,6 +2,7 @@ package board
 
 import (
 	"github.com/ascii-arcade/wish-template/games"
+	"github.com/ascii-arcade/wish-template/keys"
 	"github.com/ascii-arcade/wish-template/messages"
 	"github.com/ascii-arcade/wish-template/screen"
 	tea "github.com/charmbracelet/bubbletea"
@@ -43,7 +44,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "ctrl+c":
+		case keys.ExitApplication:
 			return m, tea.Quit
 		}
 	}

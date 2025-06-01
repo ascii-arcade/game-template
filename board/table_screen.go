@@ -3,6 +3,7 @@ package board
 import (
 	"fmt"
 
+	"github.com/ascii-arcade/wish-template/keys"
 	"github.com/ascii-arcade/wish-template/screen"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -29,9 +30,9 @@ func (s *tableScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "a":
+		case keys.GameIncrementPoint:
 			s.model.Game.Count(s.model.Player.Name)
-		case "ctrl+c":
+		case keys.ExitApplication:
 			s.model.Game.RemovePlayer(s.model.Player.Name)
 			return s.model, tea.Quit
 		}
@@ -48,5 +49,5 @@ func (s *tableScreen) View() string {
 
 	return s.style.Render(fmt.Sprintf("You are %s", s.model.Player.Name)) +
 		"\n\n" + counts +
-		"\n\n" + s.style.Render("Press 'ctrl+c' to quit")
+		"\n\n" + s.style.Render("Press '"+keys.ExitApplication+"' to quit")
 }
