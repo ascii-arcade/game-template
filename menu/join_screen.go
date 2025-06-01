@@ -45,7 +45,7 @@ func (s *joinScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 		case "enter":
 			if len(s.model.gameCodeInput.Value()) == 7 {
 				code := strings.ToUpper(s.model.gameCodeInput.Value())
-				_, err := games.Get(code)
+				_, err := games.GetOpenGame(code)
 				if err != nil {
 					s.model.setError(err.Error())
 					return s.model, nil

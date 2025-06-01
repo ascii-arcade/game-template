@@ -81,7 +81,7 @@ func (m *Model) newGame() error {
 }
 
 func (m *Model) joinGame(code string, isNew bool) error {
-	game, err := games.Get(code)
+	game, err := games.GetOpenGame(code)
 	if err != nil {
 		return err
 	}
