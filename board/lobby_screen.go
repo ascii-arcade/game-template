@@ -45,10 +45,9 @@ func (s *lobbyScreen) View() string {
 	footer := "\nWaiting for host to start the game..."
 	if s.model.Player.IsHost() {
 		err := s.model.Game.IsPlayerCountOk()
+		footer = "\nPress '" + keys.MenuStartNewGame + "' to start the game."
 		if err != nil {
 			footer = s.style.Foreground(colors.Error).Render(err.Error())
-		} else {
-			footer = "\nPress '" + keys.MenuStartNewGame + "' to start the game."
 		}
 	}
 	footer += "\nPress '" + keys.ExitApplication + "' to quit."
