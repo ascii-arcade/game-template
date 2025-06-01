@@ -41,12 +41,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case messages.RefreshBoard:
 		return m, waitForRefreshSignal(m.Player.UpdateChan)
 
-	default:
-		activeScreenModel, cmd := m.activeScreen().Update(msg)
-		return activeScreenModel.(*Model), cmd
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "ctrl+c":
+			return m, tea.Quit
+		}
 	}
 
-	return m, nil
+	screenModel, cmd := m.activeScreen().Update(msg)
+	return screenModel.(*Model), cmd
 }
 
 func (m Model) View() string {
