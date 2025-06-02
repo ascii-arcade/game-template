@@ -3,6 +3,7 @@ package menu
 import (
 	"time"
 
+	"github.com/ascii-arcade/wish-template/config"
 	"github.com/ascii-arcade/wish-template/keys"
 	"github.com/ascii-arcade/wish-template/language"
 	"github.com/ascii-arcade/wish-template/messages"
@@ -93,6 +94,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
+	if m.Width < config.MinimumWidth {
+		return m.lang().Get("error.window_too_narrow")
+	}
+	if m.Height < config.MinimumHeight {
+		return m.lang().Get("error.window_too_short")
+	}
+
 	return m.screen.View()
 }
 

@@ -16,7 +16,9 @@
       "too_many_players": "Demasiados jugadores",
       "not_enough_players": "No hay suficientes jugadores",
       "game_not_found": "Juego no encontrado",
-      "game_already_in_progress": "El juego ya está en curso"
+      "game_already_in_progress": "El juego ya está en curso",
+      "window_too_narrow": "La ventana es demasiado angosta, por favor cambia el tamaño",
+      "window_too_short": "La ventana es demasiado baja, por favor cambia el tamaño"
     },
     "menu": {
       "choose_language": "Para español, presiona %s",
