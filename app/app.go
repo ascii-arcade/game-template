@@ -1,83 +1,105 @@
 package app
 
 import (
+	"time"
+
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish/bubbletea"
 
-	"github.com/ascii-arcade/wish-template/board"
 	"github.com/ascii-arcade/wish-template/games"
-	"github.com/ascii-arcade/wish-template/menu"
 	"github.com/ascii-arcade/wish-template/messages"
+	"github.com/ascii-arcade/wish-template/screen"
 )
 
 type Model struct {
-	active tea.Model
-	menu   menu.Model
-	board  board.Model
-}
+	player *games.Player
+	game   *games.Game
 
-func (m Model) Init() tea.Cmd {
-	return m.active.Init()
-}
+	width  int
+	height int
+	screen screen.Screen
+	style  lipgloss.Style
 
-func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case messages.SwitchViewMsg:
-		m.active = msg.Model
-		initcmd := m.active.Init()
-		return m, initcmd
-	case messages.NewGame:
-		err := m.newGame()
-		if err == nil {
-			m.active = m.board
-			m.board.Init()
-		}
-		return m, func() tea.Msg {
-			return messages.SwitchViewMsg{
-				Model: m.board,
-			}
-		}
-	case messages.JoinGame:
-		err := m.joinGame(msg.GameCode, false)
-		if err == nil {
-			m.active = m.board
-			m.board.Init()
-		}
-		return m, func() tea.Msg {
-			return messages.SwitchViewMsg{
-				Model: m.board,
-			}
-		}
-	}
-
-	var cmd tea.Cmd
-	m.active, cmd = m.active.Update(msg)
-	return m, cmd
-}
-
-func (m Model) View() string {
-	return m.active.View()
+	error string
 }
 
 func TeaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 	pty, _, _ := s.Pty()
-	renderer := bubbletea.MakeRenderer(s)
-	style := renderer.NewStyle()
-
 	m := Model{
-		board: board.NewModel(pty.Window.Width, pty.Window.Height, style),
-		menu:  menu.NewModel(pty.Window.Width, pty.Window.Height, style),
+		width:  pty.Window.Width,
+		height: pty.Window.Height,
+		style:  bubbletea.MakeRenderer(s).NewStyle(),
 	}
-	m.active = m.menu
 
+	m.screen = m.newSplashScreen()
 	return m, []tea.ProgramOption{tea.WithAltScreen()}
 }
 
-func (m *Model) newGame() error {
-	newGame := games.New()
-	m.board.Game = newGame
-	return m.joinGame(newGame.Code, true)
+func (m Model) Init() tea.Cmd {
+	return tea.Batch(
+		tea.Tick(time.Second, func(t time.Time) tea.Msg {
+			return doneMsg{}
+		}),
+	)
+}
+
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.height, m.width = msg.Height, msg.Width
+		return m, nil
+
+	case tea.KeyMsg:
+		if msg.Type == tea.KeyCtrlC {
+			return m, tea.Quit
+		}
+
+	case messages.RefreshBoard:
+		return m, func() tea.Msg {
+			return messages.RefreshBoard(<-m.player.UpdateChan)
+		}
+
+	case messages.SwitchScreenMsg:
+		m.screen = msg.Screen.WithModel(&m)
+		return m, nil
+
+		// case messages.NewGame:
+		// 	err := m.newGame()
+		// 	if err == nil {
+		// 		m.active = m.board
+		// 		m.board.Init()
+		// 	}
+		// 	return m, func() tea.Msg {
+		// 		return messages.SwitchViewMsg{
+		// 			Model: m.board,
+		// 		}
+		// 	}
+		// case messages.JoinGame:
+		// 	err := m.joinGame(msg.GameCode, false)
+		// 	if err == nil {
+		// 		m.active = m.board
+		// 		m.board.Init()
+		// 	}
+		// 	return m, func() tea.Msg {
+		// 		return messages.SwitchViewMsg{
+		// 			Model: m.board,
+		// 		}
+		// 	}
+	}
+
+	activeScreenModel, cmd := m.screen.Update(msg)
+	return activeScreenModel.(*Model), cmd
+}
+
+func (m Model) View() string {
+	return m.screen.View()
+}
+
+func (m *Model) newGame() string {
+	m.game = games.New()
+	return m.game.Code
 }
 
 func (m *Model) joinGame(code string, isNew bool) error {
@@ -91,8 +113,16 @@ func (m *Model) joinGame(code string, isNew bool) error {
 		return err
 	}
 
-	m.board.Game = game
-	m.board.Player = player
+	m.game = game
+	m.player = player
 
 	return nil
+}
+
+func (m *Model) setError(err string) {
+	m.error = err
+}
+
+func (m *Model) clearError() {
+	m.error = ""
 }
