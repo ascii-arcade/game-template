@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math/rand/v2"
 
-	"github.com/ascii-arcade/wish-template/language"
+	"github.com/ascii-arcade/game-template/language"
 )
 
 func Name(lang *language.Language) string {

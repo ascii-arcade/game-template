@@ -3,11 +3,11 @@ package menu
 import (
 	"time"
 
-	"github.com/ascii-arcade/wish-template/config"
-	"github.com/ascii-arcade/wish-template/keys"
-	"github.com/ascii-arcade/wish-template/language"
-	"github.com/ascii-arcade/wish-template/messages"
-	"github.com/ascii-arcade/wish-template/screen"
+	"github.com/ascii-arcade/game-template/config"
+	"github.com/ascii-arcade/game-template/keys"
+	"github.com/ascii-arcade/game-template/language"
+	"github.com/ascii-arcade/game-template/messages"
+	"github.com/ascii-arcade/game-template/screen"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"

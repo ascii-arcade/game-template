@@ -1,12 +1,12 @@
 package board
 
 import (
-	"github.com/ascii-arcade/wish-template/config"
-	"github.com/ascii-arcade/wish-template/games"
-	"github.com/ascii-arcade/wish-template/keys"
-	"github.com/ascii-arcade/wish-template/language"
-	"github.com/ascii-arcade/wish-template/messages"
-	"github.com/ascii-arcade/wish-template/screen"
+	"github.com/ascii-arcade/game-template/config"
+	"github.com/ascii-arcade/game-template/games"
+	"github.com/ascii-arcade/game-template/keys"
+	"github.com/ascii-arcade/game-template/language"
+	"github.com/ascii-arcade/game-template/messages"
+	"github.com/ascii-arcade/game-template/screen"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )

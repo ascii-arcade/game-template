@@ -7,8 +7,8 @@ import (
 
 	"slices"
 
-	"github.com/ascii-arcade/wish-template/generaterandom"
-	"github.com/ascii-arcade/wish-template/language"
+	"github.com/ascii-arcade/game-template/generaterandom"
+	"github.com/ascii-arcade/game-template/language"
 )
 
 var games = make(map[string]*Game)

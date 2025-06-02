@@ -10,8 +10,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ascii-arcade/wish-template/app"
-	"github.com/ascii-arcade/wish-template/config"
+	"github.com/ascii-arcade/game-template/app"
+	"github.com/ascii-arcade/game-template/config"
 	"github.com/charmbracelet/log"
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish"

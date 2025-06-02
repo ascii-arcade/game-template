@@ -1,8 +1,8 @@
 package games
 
 import (
-	"github.com/ascii-arcade/wish-template/generaterandom"
-	"github.com/ascii-arcade/wish-template/language"
+	"github.com/ascii-arcade/game-template/generaterandom"
+	"github.com/ascii-arcade/game-template/language"
 )
 
 type Player struct {

@@ -3,9 +3,9 @@ package board
 import (
 	"fmt"
 
-	"github.com/ascii-arcade/wish-template/colors"
-	"github.com/ascii-arcade/wish-template/keys"
-	"github.com/ascii-arcade/wish-template/screen"
+	"github.com/ascii-arcade/game-template/colors"
+	"github.com/ascii-arcade/game-template/keys"
+	"github.com/ascii-arcade/game-template/screen"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )

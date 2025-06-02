@@ -1,7 +1,7 @@
 package messages
 
 import (
-	"github.com/ascii-arcade/wish-template/screen"
+	"github.com/ascii-arcade/game-template/screen"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
