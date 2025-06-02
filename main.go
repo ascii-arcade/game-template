@@ -1,7 +1,6 @@
 package main
 
 import (
-	"cmp"
 	"context"
 	"errors"
 	"fmt"
@@ -12,7 +11,7 @@ import (
 	"time"
 
 	"github.com/ascii-arcade/wish-template/app"
-	"github.com/ascii-arcade/wish-template/language"
+	"github.com/ascii-arcade/wish-template/config"
 	"github.com/charmbracelet/log"
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish"
@@ -21,18 +20,9 @@ import (
 	"github.com/charmbracelet/wish/logging"
 )
 
-const (
-	version = "dev"
-	host    = "localhost"
-	port    = "23234"
-)
-
 func main() {
-	langCode := cmp.Or(os.Getenv("ASCII_ARCADE_LANG"), "EN")
-	lang := language.Languages[langCode]
-
 	s, err := wish.NewServer(
-		wish.WithAddress(net.JoinHostPort(host, port)),
+		wish.WithAddress(net.JoinHostPort(config.Host, config.Port)),
 		wish.WithHostKeyPath(".ssh/id_ed25519"),
 		wish.WithMiddleware(
 			bubbletea.Middleware(app.TeaHandler),
@@ -41,25 +31,26 @@ func main() {
 		),
 	)
 	if err != nil {
-		log.Error(lang.Get("ssh.could_not_start_server"), err)
+		log.Error(config.Language.Get("ssh.could_not_start_server"), err)
 	}
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-	log.Info(fmt.Sprintf(lang.Get("ssh.starting_server"), host, port))
+	log.Info(fmt.Sprintf(config.Language.Get("ssh.starting_server"), config.Host, config.Port))
+	log.Info(fmt.Sprintf(config.Language.Get("ssh.server_version"), config.Version))
 
 	go func() {
 		if err = s.ListenAndServe(); err != nil && !errors.Is(err, ssh.ErrServerClosed) {
-			log.Error(lang.Get("ssh.could_not_start_server"), err)
+			log.Error(config.Language.Get("ssh.could_not_start_server"), err)
 			done <- nil
 		}
 	}()
 
 	<-done
-	log.Info(lang.Get("ssh.stopping_server"))
+	log.Info(config.Language.Get("ssh.stopping_server"))
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	if err := s.Shutdown(ctx); err != nil && !errors.Is(err, ssh.ErrServerClosed) {
-		log.Error(lang.Get("ssh.could_not_stop_server"), err)
+		log.Error(config.Language.Get("ssh.could_not_stop_server"), err)
 	}
 }

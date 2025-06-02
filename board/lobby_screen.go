@@ -41,7 +41,7 @@ func (s *lobbyScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 }
 
 func (s *lobbyScreen) View() string {
-	style := s.style.Width(s.model.Width / 3)
+	style := s.style.Width(s.model.Width / 2)
 
 	footer := s.model.lang().Get("board.waiting_for_start")
 	if s.model.Player.IsHost() {

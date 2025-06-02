@@ -1,14 +1,12 @@
 package app
 
 import (
-	"cmp"
-	"os"
-
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish/bubbletea"
 
 	"github.com/ascii-arcade/wish-template/board"
+	"github.com/ascii-arcade/wish-template/config"
 	"github.com/ascii-arcade/wish-template/games"
 	"github.com/ascii-arcade/wish-template/language"
 	"github.com/ascii-arcade/wish-template/menu"
@@ -71,7 +69,7 @@ func TeaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 	renderer := bubbletea.MakeRenderer(s)
 	style := renderer.NewStyle()
 
-	languagePreference := language.LanguagePreference{Lang: language.Languages[cmp.Or(os.Getenv("ASCII_ARCADE_LANG"), "EN")]}
+	languagePreference := language.LanguagePreference{Lang: config.Language}
 
 	m := Model{
 		languagePreference: &languagePreference,

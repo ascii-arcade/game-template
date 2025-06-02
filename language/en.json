@@ -6,6 +6,7 @@
       "quit": "Press %s to quit the game"
     },
     "ssh": {
+      "server_version": "Version: %s",
       "starting_server": "Starting SSH server on %s:%s",
       "stopping_server": "Stopping SSH server",
       "could_not_start_server": "Could not start server",
@@ -16,7 +17,9 @@
       "too_many_players": "Too many players",
       "not_enough_players": "Not enough players",
       "game_not_found": "Game not found",
-      "game_already_in_progress": "Game already in progress"
+      "game_already_in_progress": "Game already in progress",
+      "window_too_narrow": "Window too narrow, please resize",
+      "window_too_short": "Window too short, please resize"
     },
     "menu": {
       "choose_language": "For english, press %s",
