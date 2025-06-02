@@ -24,6 +24,9 @@ type Language struct {
 	ID           string                 `json:"id"`
 	Name         string                 `json:"name"`
 	Translations map[string]translation `json:"translations"`
+
+	UsernameFirstWords  []string `json:"username_first_words"`
+	UsernameSecondWords []string `json:"username_second_words"`
 }
 
 func (l *Language) Get(path string) string {

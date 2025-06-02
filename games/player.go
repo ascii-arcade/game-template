@@ -1,6 +1,9 @@
 package games
 
-import "github.com/ascii-arcade/wish-template/generaterandom"
+import (
+	"github.com/ascii-arcade/wish-template/generaterandom"
+	"github.com/ascii-arcade/wish-template/language"
+)
 
 type Player struct {
 	Name      string
@@ -12,9 +15,9 @@ type Player struct {
 	UpdateChan chan struct{}
 }
 
-func newPlayer(maxTurnOrder int, host bool) *Player {
+func newPlayer(maxTurnOrder int, host bool, lang *language.Language) *Player {
 	return &Player{
-		Name:       generaterandom.Name(),
+		Name:       generaterandom.Name(lang),
 		Count:      0,
 		TurnOrder:  maxTurnOrder + 1,
 		UpdateChan: make(chan struct{}),
