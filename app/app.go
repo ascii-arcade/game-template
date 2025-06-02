@@ -13,10 +13,9 @@ import (
 )
 
 type Model struct {
-	active             tea.Model
-	menu               menu.Model
-	board              board.Model
-	languagePreference *language.LanguagePreference
+	active tea.Model
+	menu   menu.Model
+	board  board.Model
 }
 
 func (m Model) Init() tea.Cmd {
