@@ -14,12 +14,12 @@ const (
 
 	Host = "localhost"
 	Port = "23234"
-
-	Version = "dev"
 )
 
 var (
 	Language *language.Language = setDefaultLanguage()
+
+	Version string = "dev"
 )
 
 func setDefaultLanguage() *language.Language {

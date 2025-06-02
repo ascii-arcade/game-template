@@ -6,6 +6,7 @@
       "quit": "Presiona %s para salir del juego"
     },
     "ssh": {
+      "server_version": "Versión: %s",
       "starting_server": "Iniciando servidor SSH en %s:%s",
       "stopping_server": "Deteniendo servidor SSH",
       "could_not_start_server": "No se pudo iniciar el servidor",

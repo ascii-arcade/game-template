@@ -37,6 +37,7 @@ func main() {
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	log.Info(fmt.Sprintf(config.Language.Get("ssh.starting_server"), config.Host, config.Port))
+	log.Info(fmt.Sprintf(config.Language.Get("ssh.server_version"), config.Version))
 
 	go func() {
 		if err = s.ListenAndServe(); err != nil && !errors.Is(err, ssh.ErrServerClosed) {
