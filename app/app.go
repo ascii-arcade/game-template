@@ -5,12 +5,12 @@ import (
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish/bubbletea"
 
-	"github.com/ascii-arcade/wish-template/board"
-	"github.com/ascii-arcade/wish-template/config"
-	"github.com/ascii-arcade/wish-template/games"
-	"github.com/ascii-arcade/wish-template/language"
-	"github.com/ascii-arcade/wish-template/menu"
-	"github.com/ascii-arcade/wish-template/messages"
+	"github.com/ascii-arcade/game-template/board"
+	"github.com/ascii-arcade/game-template/config"
+	"github.com/ascii-arcade/game-template/games"
+	"github.com/ascii-arcade/game-template/language"
+	"github.com/ascii-arcade/game-template/menu"
+	"github.com/ascii-arcade/game-template/messages"
 )
 
 type Model struct {
