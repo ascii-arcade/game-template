@@ -2,6 +2,7 @@ package menu
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/ascii-arcade/wish-template/keys"
 	"github.com/ascii-arcade/wish-template/language"
@@ -53,24 +54,25 @@ func (s *optionScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 }
 
 func (s *optionScreen) View() string {
+	var content strings.Builder
 	style := s.style.Width(s.model.Width).Height(s.model.Height)
 	paneStyle := s.style.Width(s.model.Width).Height(s.model.Height / 2)
 
-	content := s.model.lang().Get("menu.welcome") + "\n\n"
-	content += fmt.Sprintf(s.model.lang().Get("menu.press_to_create"), keys.MenuStartNewGame.String(s.style)) + "\n"
-	content += fmt.Sprintf(s.model.lang().Get("menu.press_to_join"), keys.MenuJoinGame.String(s.style)) + "\n"
-	content += "\n\n"
+	content.WriteString(s.model.lang().Get("menu.welcome") + "\n\n")
+	content.WriteString(fmt.Sprintf(s.model.lang().Get("menu.press_to_create"), keys.MenuStartNewGame.String(s.style)) + "\n")
+	content.WriteString(fmt.Sprintf(s.model.lang().Get("menu.press_to_join"), keys.MenuJoinGame.String(s.style)) + "\n")
+	content.WriteString("\n\n")
 
 	if s.model.lang() == language.Languages["EN"] {
-		content += fmt.Sprintf(language.Languages["ES"].Get("menu.choose_language"), keys.MenuSpanish.String(s.style))
+		content.WriteString(fmt.Sprintf(language.Languages["ES"].Get("menu.choose_language"), keys.MenuSpanish.String(s.style)))
 	} else if s.model.lang() == language.Languages["ES"] {
-		content += fmt.Sprintf(language.Languages["EN"].Get("menu.choose_language"), keys.MenuEnglish.String(s.style))
+		content.WriteString(fmt.Sprintf(language.Languages["EN"].Get("menu.choose_language"), keys.MenuEnglish.String(s.style)))
 	}
 
 	panes := lipgloss.JoinVertical(
 		lipgloss.Center,
 		paneStyle.MarginBottom(2).Align(lipgloss.Center, lipgloss.Bottom).Render(logo),
-		paneStyle.Align(lipgloss.Center, lipgloss.Top).Render(content),
+		paneStyle.Align(lipgloss.Center, lipgloss.Top).Render(content.String()),
 	)
 
 	return style.Render(panes)
