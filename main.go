@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/ascii-arcade/wish-template/app"
+	"github.com/ascii-arcade/wish-template/config"
 	"github.com/ascii-arcade/wish-template/language"
 	"github.com/charmbracelet/log"
 	"github.com/charmbracelet/ssh"
@@ -21,18 +22,12 @@ import (
 	"github.com/charmbracelet/wish/logging"
 )
 
-const (
-	version = "dev"
-	host    = "localhost"
-	port    = "23234"
-)
-
 func main() {
 	langCode := cmp.Or(os.Getenv("ASCII_ARCADE_LANG"), "EN")
 	lang := language.Languages[langCode]
 
 	s, err := wish.NewServer(
-		wish.WithAddress(net.JoinHostPort(host, port)),
+		wish.WithAddress(net.JoinHostPort(config.Host, config.Port)),
 		wish.WithHostKeyPath(".ssh/id_ed25519"),
 		wish.WithMiddleware(
 			bubbletea.Middleware(app.TeaHandler),
@@ -46,7 +41,7 @@ func main() {
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-	log.Info(fmt.Sprintf(lang.Get("ssh.starting_server"), host, port))
+	log.Info(fmt.Sprintf(lang.Get("ssh.starting_server"), config.Host, config.Port))
 
 	go func() {
 		if err = s.ListenAndServe(); err != nil && !errors.Is(err, ssh.ErrServerClosed) {
