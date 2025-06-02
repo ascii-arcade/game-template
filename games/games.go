@@ -8,6 +8,7 @@ import (
 	"slices"
 
 	"github.com/ascii-arcade/wish-template/generaterandom"
+	"github.com/ascii-arcade/wish-template/language"
 )
 
 var games = make(map[string]*Game)
@@ -74,7 +75,7 @@ func (s *Game) withLock(fn func() error) error {
 	return fn()
 }
 
-func (s *Game) AddPlayer(isHost bool) (*Player, error) {
+func (s *Game) AddPlayer(isHost bool, lang *language.Language) (*Player, error) {
 	var player *Player
 	err := s.withLock(func() error {
 		if s.inProgress {
@@ -87,7 +88,7 @@ func (s *Game) AddPlayer(isHost bool) (*Player, error) {
 				maxTurnOrder = p.TurnOrder
 			}
 		}
-		player = newPlayer(maxTurnOrder, isHost)
+		player = newPlayer(maxTurnOrder, isHost, lang)
 		s.players = append(s.players, player)
 		return nil
 	})
