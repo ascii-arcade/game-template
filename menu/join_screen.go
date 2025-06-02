@@ -72,12 +72,13 @@ func (s *joinScreen) View() string {
 	style := s.style.Width(s.model.Width).Height(s.model.Height)
 	paneStyle := s.model.style.Width(s.model.Width).Height(s.model.Height / 2)
 
-	content := "Enter the game code to join:\n\n" + s.model.gameCodeInput.View()
+	content := s.model.lang().Get("menu.enter_code") + "\n\n" + s.model.gameCodeInput.View()
+	errorMessage := s.model.lang().Get(s.model.errorCode)
 
 	panes := lipgloss.JoinVertical(
 		lipgloss.Center,
 		paneStyle.MarginBottom(2).Align(lipgloss.Center, lipgloss.Bottom).Render(logo),
-		paneStyle.Align(lipgloss.Center, lipgloss.Top).Render(content+"\n\n"+s.style.Foreground(colors.Error).Render(s.model.error)),
+		paneStyle.Align(lipgloss.Center, lipgloss.Top).Render(content+"\n\n"+s.style.Foreground(colors.Error).Render(errorMessage)),
 	)
 
 	return style.Render(panes)

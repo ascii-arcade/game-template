@@ -20,10 +20,10 @@ func (s *Game) Begin() error {
 
 func (s *Game) IsPlayerCountOk() error {
 	if len(s.players) > maximumPlayers {
-		return errors.New("Too many players")
+		return errors.New("error.too_many_players")
 	}
 	if len(s.players) < minimumPlayers {
-		return errors.New("Not enough players")
+		return errors.New("error.not_enough_players")
 	}
 	return nil
 }

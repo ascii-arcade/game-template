@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net"
 	"os"
 	"os/signal"
@@ -10,6 +11,7 @@ import (
 	"time"
 
 	"github.com/ascii-arcade/wish-template/app"
+	"github.com/ascii-arcade/wish-template/language"
 	"github.com/charmbracelet/log"
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish"
@@ -34,25 +36,25 @@ func main() {
 		),
 	)
 	if err != nil {
-		log.Error("Could not start server", "error", err)
+		log.Error(language.Languages["EN"].Get("ssh.could_not_start_server"), err)
 	}
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-	log.Info("Starting SSH server", "host", host, "port", port)
+	log.Info(fmt.Sprintf(language.Languages["EN"].Get("ssh.starting_server"), host, port))
 
 	go func() {
 		if err = s.ListenAndServe(); err != nil && !errors.Is(err, ssh.ErrServerClosed) {
-			log.Error("Could not start server", "error", err)
+			log.Error(language.Languages["EN"].Get("ssh.could_not_start_server"), err)
 			done <- nil
 		}
 	}()
 
 	<-done
-	log.Info("Stopping SSH server")
+	log.Info(language.Languages["EN"].Get("ssh.stopping_server"))
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	if err := s.Shutdown(ctx); err != nil && !errors.Is(err, ssh.ErrServerClosed) {
-		log.Error("Could not stop server", "error", err)
+		log.Error(language.Languages["EN"].Get("ssh.could_not_stop_server"), err)
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/ascii-arcade/wish-template/keys"
+	"github.com/ascii-arcade/wish-template/language"
 	"github.com/ascii-arcade/wish-template/messages"
 	"github.com/ascii-arcade/wish-template/screen"
 	"github.com/charmbracelet/bubbles/textinput"
@@ -29,24 +30,26 @@ const logo = `++----------------------------------------------------------------
 type doneMsg struct{}
 
 type Model struct {
-	Width  int
-	Height int
-	screen screen.Screen
-	style  lipgloss.Style
+	Width              int
+	Height             int
+	screen             screen.Screen
+	style              lipgloss.Style
+	languagePreference *language.LanguagePreference
 
-	error         string
+	errorCode     string
 	gameCodeInput textinput.Model
 }
 
-func NewModel(width, height int, style lipgloss.Style) Model {
+func NewModel(width, height int, style lipgloss.Style, languagePreference *language.LanguagePreference) Model {
 	ti := textinput.New()
 	ti.Width = 9
 	ti.CharLimit = 7
 
 	m := Model{
-		Width:  width,
-		Height: height,
-		style:  style,
+		Width:              width,
+		Height:             height,
+		style:              style,
+		languagePreference: languagePreference,
 
 		gameCodeInput: ti,
 	}
@@ -63,6 +66,10 @@ func (m Model) Init() tea.Cmd {
 		tea.WindowSize(),
 		textinput.Blink,
 	)
+}
+
+func (m *Model) lang() *language.Language {
+	return m.languagePreference.Lang
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -90,9 +97,9 @@ func (m Model) View() string {
 }
 
 func (m *Model) setError(err string) {
-	m.error = err
+	m.errorCode = err
 }
 
 func (m *Model) clearError() {
-	m.error = ""
+	m.errorCode = ""
 }
