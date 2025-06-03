@@ -79,7 +79,7 @@ func (s *Game) AddPlayer(isHost bool, lang *language.Language) (*Player, error) 
 	var player *Player
 	err := s.withLock(func() error {
 		if s.inProgress {
-			return errors.New("error.game_already_in_progress")
+			return errors.New("game_already_in_progress")
 		}
 
 		maxTurnOrder := 0
