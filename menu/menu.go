@@ -3,6 +3,7 @@ package menu
 import (
 	"time"
 
+	"github.com/ascii-arcade/game-template/colors"
 	"github.com/ascii-arcade/game-template/config"
 	"github.com/ascii-arcade/game-template/keys"
 	"github.com/ascii-arcade/game-template/language"
@@ -101,7 +102,16 @@ func (m Model) View() string {
 		return m.lang().Get("error.window_too_short")
 	}
 
-	return m.screen.View()
+	style := m.style.Width(m.Width).Height(m.Height)
+	paneStyle := m.style.Width(m.Width).PaddingTop(1)
+
+	panes := lipgloss.JoinVertical(
+		lipgloss.Center,
+		paneStyle.Align(lipgloss.Center, lipgloss.Bottom).Foreground(colors.Logo).Height(m.Height/2).Render(logo),
+		paneStyle.Align(lipgloss.Center, lipgloss.Top).Render(m.screen.View()),
+	)
+
+	return style.Render(panes)
 }
 
 func (m *Model) setError(err string) {
