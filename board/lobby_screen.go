@@ -43,17 +43,17 @@ func (s *lobbyScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 func (s *lobbyScreen) View() string {
 	style := s.style.Width(s.model.Width / 2)
 
-	footer := s.model.lang().Get("board.waiting_for_start")
+	footer := s.model.lang().Get("board", "waiting_for_start")
 	if s.model.Player.IsHost() {
-		err := s.model.Game.IsPlayerCountOk()
-		footer = fmt.Sprintf(s.model.lang().Get("board.press_to_start"), keys.MenuStartNewGame.String(s.style))
-		if err != nil {
-			errorMessage := s.model.lang().Get(err.Error())
+		footer = fmt.Sprintf(s.model.lang().Get("board", "press_to_start"), keys.MenuStartNewGame.String(s.style))
+
+		if err := s.model.Game.IsPlayerCountOk(); err != nil {
+			errorMessage := s.model.lang().Get("error", err.Error())
 			footer = s.style.Foreground(colors.Error).Render(errorMessage)
 		}
 	}
 	footer += "\n"
-	footer += fmt.Sprintf(s.model.lang().Get("global.quit"), keys.ExitApplication.String(s.style))
+	footer += fmt.Sprintf(s.model.lang().Get("global", "quit"), keys.ExitApplication.String(s.style))
 
 	header := s.model.Game.Code
 	playerList := s.style.Render(s.playerList())
@@ -84,10 +84,10 @@ func (s *lobbyScreen) playerList() string {
 	for _, p := range s.model.Game.OrderedPlayers() {
 		playerList += "* " + p.Name
 		if p.Name == s.model.Player.Name {
-			playerList += fmt.Sprintf(" (%s)", s.model.lang().Get("board.player_list_you"))
+			playerList += fmt.Sprintf(" (%s)", s.model.lang().Get("board", "player_list_you"))
 		}
 		if p.IsHost() {
-			playerList += fmt.Sprintf(" (%s)", s.model.lang().Get("board.player_list_host"))
+			playerList += fmt.Sprintf(" (%s)", s.model.lang().Get("board", "player_list_host"))
 		}
 		playerList += "\n"
 	}

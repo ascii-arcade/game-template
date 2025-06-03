@@ -63,10 +63,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m Model) View() string {
 	if m.Width < config.MinimumWidth {
-		return m.lang().Get("error.window_too_narrow")
+		return m.lang().Get("error", "window_too_narrow")
 	}
 	if m.Height < config.MinimumHeight {
-		return m.lang().Get("error.window_too_short")
+		return m.lang().Get("error", "window_too_short")
 	}
 
 	return m.activeScreen().View()

@@ -55,15 +55,15 @@ func (s *optionScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 
 func (s *optionScreen) View() string {
 	var content strings.Builder
-	content.WriteString(s.model.lang().Get("menu.welcome") + "\n\n")
-	content.WriteString(fmt.Sprintf(s.model.lang().Get("menu.press_to_create"), keys.MenuStartNewGame.String(s.style)) + "\n")
-	content.WriteString(fmt.Sprintf(s.model.lang().Get("menu.press_to_join"), keys.MenuJoinGame.String(s.style)) + "\n")
+	content.WriteString(s.model.lang().Get("menu", "welcome") + "\n\n")
+	content.WriteString(fmt.Sprintf(s.model.lang().Get("menu", "press_to_create"), keys.MenuStartNewGame.String(s.style)) + "\n")
+	content.WriteString(fmt.Sprintf(s.model.lang().Get("menu", "press_to_join"), keys.MenuJoinGame.String(s.style)) + "\n")
 	content.WriteString("\n\n")
 
 	if s.model.lang() == language.Languages["EN"] {
-		content.WriteString(fmt.Sprintf(language.Languages["ES"].Get("menu.choose_language"), keys.MenuSpanish.String(s.style)))
+		content.WriteString(fmt.Sprintf(language.Languages["ES"].Get("menu", "choose_language"), keys.MenuSpanish.String(s.style)))
 	} else if s.model.lang() == language.Languages["ES"] {
-		content.WriteString(fmt.Sprintf(language.Languages["EN"].Get("menu.choose_language"), keys.MenuEnglish.String(s.style)))
+		content.WriteString(fmt.Sprintf(language.Languages["EN"].Get("menu", "choose_language"), keys.MenuEnglish.String(s.style)))
 	}
 
 	return content.String()

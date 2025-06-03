@@ -18,35 +18,45 @@ var Languages = map[string]*Language{
 	"ES": LoadLanguage(esJSON),
 }
 
-type translation map[string]string
-
 type Language struct {
-	ID           string                 `json:"id"`
-	Name         string                 `json:"name"`
-	Translations map[string]translation `json:"translations"`
+	ID           string         `json:"id"`
+	Name         string         `json:"name"`
+	Translations map[string]any `json:"translations"`
 
 	UsernameFirstWords  []string `json:"username_first_words"`
 	UsernameSecondWords []string `json:"username_second_words"`
 }
 
-func (l *Language) Get(path string) string {
-	parts := strings.SplitN(path, ".", 2)
-	if len(parts) != 2 {
+var DefaultLanguage = Languages["EN"]
+
+func (l *Language) Get(pathList ...string) string {
+	if len(pathList) == 0 {
 		return ""
 	}
-	section, key := parts[0], parts[1]
-
-	if sec, ok := l.Translations[section]; ok {
-		if val, ok := sec[key]; ok {
-			return val
+	var current any = l.Translations
+	for i, key := range pathList {
+		m, ok := current.(map[string]any)
+		if !ok {
+			return missingTranslationValue(pathList)
 		}
-		return missingTranslationValue(section, key)
+		val, exists := m[key]
+		if !exists {
+			return missingTranslationValue(pathList)
+		}
+		if i == len(pathList)-1 {
+			str, ok := val.(string)
+			if !ok {
+				return missingTranslationValue(pathList)
+			}
+			return str
+		}
+		current = val
 	}
-	return missingTranslationValue(section, key)
+	return ""
 }
 
-func missingTranslationValue(section, key string) string {
-	return "i18n-missing:'" + section + "." + key + "'"
+func missingTranslationValue(pathList []string) string {
+	return "i18n-missing:'" + strings.Join(pathList, ".") + "'"
 }
 
 func LoadLanguage(data []byte) *Language {

@@ -43,7 +43,7 @@ func (s *tableScreen) View() string {
 		counts += fmt.Sprintf("%s: %d\n", p.Name, p.Count)
 	}
 
-	return s.style.Render(fmt.Sprintf(s.model.lang().Get("board.you_are"), s.model.Player.Name)) +
+	return s.style.Render(fmt.Sprintf(s.model.lang().Get("board", "you_are"), s.model.Player.Name)) +
 		"\n\n" + counts +
-		"\n\n" + s.style.Render(fmt.Sprintf(s.model.lang().Get("global.quit"), keys.ExitApplication.String(s.style)))
+		"\n\n" + s.style.Render(fmt.Sprintf(s.model.lang().Get("global", "quit"), keys.ExitApplication.String(s.style)))
 }

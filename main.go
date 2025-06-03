@@ -31,26 +31,26 @@ func main() {
 		),
 	)
 	if err != nil {
-		log.Error(config.Language.Get("ssh.could_not_start_server"), err)
+		log.Error(config.Language.Get("ssh", "could_not_start_server"), err)
 	}
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-	log.Info(fmt.Sprintf(config.Language.Get("ssh.starting_server"), config.Host, config.Port))
-	log.Info(fmt.Sprintf(config.Language.Get("ssh.server_version"), config.Version))
+	log.Info(fmt.Sprintf(config.Language.Get("ssh", "starting_server"), config.Host, config.Port))
+	log.Info(fmt.Sprintf(config.Language.Get("ssh", "server_version"), config.Version))
 
 	go func() {
 		if err = s.ListenAndServe(); err != nil && !errors.Is(err, ssh.ErrServerClosed) {
-			log.Error(config.Language.Get("ssh.could_not_start_server"), err)
+			log.Error(config.Language.Get("ssh", "could_not_start_server"), err)
 			done <- nil
 		}
 	}()
 
 	<-done
-	log.Info(config.Language.Get("ssh.stopping_server"))
+	log.Info(config.Language.Get("ssh", "stopping_server"))
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	if err := s.Shutdown(ctx); err != nil && !errors.Is(err, ssh.ErrServerClosed) {
-		log.Error(config.Language.Get("ssh.could_not_stop_server"), err)
+		log.Error(config.Language.Get("ssh", "could_not_stop_server"), err)
 	}
 }
