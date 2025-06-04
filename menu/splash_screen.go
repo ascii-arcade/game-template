@@ -53,13 +53,13 @@ func (s *splashScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 
 func (s *splashScreen) View() string {
 	style := s.style.
-		Width(s.model.Width).
-		Height(s.model.Height)
+		Width(s.model.width).
+		Height(s.model.height)
 
 	return style.Render(
 		lipgloss.Place(
-			s.model.Width,
-			s.model.Height,
+			s.model.width,
+			s.model.height,
 			lipgloss.Center,
 			lipgloss.Center,
 			splashLogo,

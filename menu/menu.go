@@ -33,8 +33,8 @@ const logo = `++----------------------------------------------------------------
 type doneMsg struct{}
 
 type Model struct {
-	Width  int
-	Height int
+	width  int
+	height int
 	screen screen.Screen
 	style  lipgloss.Style
 
@@ -50,8 +50,8 @@ func NewModel(width, height int, style lipgloss.Style, player *games.Player) Mod
 	ti.CharLimit = 7
 
 	m := Model{
-		Width:  width,
-		Height: height,
+		width:  width,
+		height: height,
 		style:  style,
 
 		gameCodeInput: ti,
@@ -78,10 +78,6 @@ func (m *Model) lang() *language.Language {
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.WindowSizeMsg:
-		m.Height, m.Width = msg.Height, msg.Width
-		return m, nil
-
 	case messages.SwitchScreenMsg:
 		m.screen = msg.Screen.WithModel(&m)
 		return m, nil
@@ -97,19 +93,19 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	if m.Width < config.MinimumWidth {
+	if m.width < config.MinimumWidth {
 		return m.lang().Get("error", "window_too_narrow")
 	}
-	if m.Height < config.MinimumHeight {
+	if m.height < config.MinimumHeight {
 		return m.lang().Get("error", "window_too_short")
 	}
 
-	style := m.style.Width(m.Width).Height(m.Height)
-	paneStyle := m.style.Width(m.Width).PaddingTop(1)
+	style := m.style.Width(m.width).Height(m.height)
+	paneStyle := m.style.Width(m.width).PaddingTop(1)
 
 	panes := lipgloss.JoinVertical(
 		lipgloss.Center,
-		paneStyle.Align(lipgloss.Center, lipgloss.Bottom).Foreground(colors.Logo).Height(m.Height/2).Render(logo),
+		paneStyle.Align(lipgloss.Center, lipgloss.Bottom).Foreground(colors.Logo).Height(m.height/2).Render(logo),
 		paneStyle.Align(lipgloss.Center, lipgloss.Top).Render(m.screen.View()),
 	)
 
