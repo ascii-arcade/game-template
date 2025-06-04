@@ -12,22 +12,21 @@ import (
 )
 
 type Model struct {
-	Width              int
-	Height             int
-	screen             screen.Screen
-	style              lipgloss.Style
-	languagePreference *language.LanguagePreference
+	Width  int
+	Height int
+	screen screen.Screen
+	style  lipgloss.Style
 
 	Player *games.Player
 	Game   *games.Game
 }
 
-func NewModel(width, height int, style lipgloss.Style, languagePreference *language.LanguagePreference) Model {
+func NewModel(width, height int, style lipgloss.Style, player *games.Player) Model {
 	m := Model{
-		Width:              width,
-		Height:             height,
-		style:              style,
-		languagePreference: languagePreference,
+		Width:  width,
+		Height: height,
+		style:  style,
+		Player: player,
 	}
 
 	m.screen = m.newTableScreen()
@@ -39,7 +38,7 @@ func (m Model) Init() tea.Cmd {
 }
 
 func (m *Model) lang() *language.Language {
-	return m.languagePreference.Lang
+	return m.Player.LanguagePreference.Lang
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {

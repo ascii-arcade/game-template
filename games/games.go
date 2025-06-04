@@ -75,7 +75,7 @@ func (s *Game) withLock(fn func() error) error {
 	return fn()
 }
 
-func (s *Game) AddPlayer(isHost bool, lang *language.Language) (*Player, error) {
+func (s *Game) AddPlayer(isHost bool, lang *language.LanguagePreference) (*Player, error) {
 	var player *Player
 	err := s.withLock(func() error {
 		if s.inProgress {
@@ -88,7 +88,7 @@ func (s *Game) AddPlayer(isHost bool, lang *language.Language) (*Player, error) 
 				maxTurnOrder = p.TurnOrder
 			}
 		}
-		player = newPlayer(maxTurnOrder, isHost, lang)
+		player = NewPlayer(lang).MakeHost()
 		s.players = append(s.players, player)
 		return nil
 	})

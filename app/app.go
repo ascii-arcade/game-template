@@ -71,10 +71,12 @@ func TeaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 
 	languagePreference := language.LanguagePreference{Lang: config.Language}
 
+	player := games.NewPlayer(&languagePreference)
+
 	m := Model{
 		languagePreference: &languagePreference,
-		board:              board.NewModel(pty.Window.Width, pty.Window.Height, style, &languagePreference),
-		menu:               menu.NewModel(pty.Window.Width, pty.Window.Height, style, &languagePreference),
+		board:              board.NewModel(pty.Window.Width, pty.Window.Height, style, player),
+		menu:               menu.NewModel(pty.Window.Width, pty.Window.Height, style, player),
 	}
 	m.active = m.menu
 
@@ -93,7 +95,7 @@ func (m *Model) joinGame(code string, isNew bool) error {
 		return err
 	}
 
-	player, err := game.AddPlayer(isNew, m.languagePreference.Lang)
+	player, err := game.AddPlayer(isNew, m.languagePreference)
 	if err != nil {
 		return err
 	}

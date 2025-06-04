@@ -5,6 +5,7 @@ import (
 
 	"github.com/ascii-arcade/game-template/colors"
 	"github.com/ascii-arcade/game-template/config"
+	"github.com/ascii-arcade/game-template/games"
 	"github.com/ascii-arcade/game-template/keys"
 	"github.com/ascii-arcade/game-template/language"
 	"github.com/ascii-arcade/game-template/messages"
@@ -32,28 +33,29 @@ const logo = `++----------------------------------------------------------------
 type doneMsg struct{}
 
 type Model struct {
-	Width              int
-	Height             int
-	screen             screen.Screen
-	style              lipgloss.Style
-	languagePreference *language.LanguagePreference
+	Width  int
+	Height int
+	screen screen.Screen
+	style  lipgloss.Style
 
 	errorCode     string
 	gameCodeInput textinput.Model
+
+	player *games.Player
 }
 
-func NewModel(width, height int, style lipgloss.Style, languagePreference *language.LanguagePreference) Model {
+func NewModel(width, height int, style lipgloss.Style, player *games.Player) Model {
 	ti := textinput.New()
 	ti.Width = 9
 	ti.CharLimit = 7
 
 	m := Model{
-		Width:              width,
-		Height:             height,
-		style:              style,
-		languagePreference: languagePreference,
+		Width:  width,
+		Height: height,
+		style:  style,
 
 		gameCodeInput: ti,
+		player:        player,
 	}
 
 	m.screen = m.newSplashScreen()
@@ -71,7 +73,7 @@ func (m Model) Init() tea.Cmd {
 }
 
 func (m *Model) lang() *language.Language {
-	return m.languagePreference.Lang
+	return m.player.LanguagePreference.Lang
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {

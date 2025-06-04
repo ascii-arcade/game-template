@@ -12,17 +12,32 @@ type Player struct {
 
 	isHost bool
 
-	UpdateChan chan struct{}
+	UpdateChan         chan struct{}
+	LanguagePreference *language.LanguagePreference
 }
 
-func newPlayer(maxTurnOrder int, host bool, lang *language.Language) *Player {
+func NewPlayer(langPref *language.LanguagePreference) *Player {
 	return &Player{
-		Name:       generaterandom.Name(lang),
-		Count:      0,
-		TurnOrder:  maxTurnOrder + 1,
-		UpdateChan: make(chan struct{}),
-		isHost:     host,
+		Name:               generaterandom.Name(langPref.Lang),
+		Count:              0,
+		UpdateChan:         make(chan struct{}),
+		LanguagePreference: langPref,
 	}
+}
+
+func (p *Player) SetName(name string) *Player {
+	p.Name = name
+	return p
+}
+
+func (p *Player) SetTurnOrder(order int) *Player {
+	p.TurnOrder = order
+	return p
+}
+
+func (p *Player) MakeHost() *Player {
+	p.isHost = true
+	return p
 }
 
 func (p *Player) IsHost() bool {
