@@ -44,11 +44,25 @@ func (l *Language) Get(pathList ...string) string {
 			return missingTranslationValue(pathList)
 		}
 		if i == len(pathList)-1 {
-			str, ok := val.(string)
-			if !ok {
+			strOut := ""
+			if str, ok := val.(string); ok {
+				strOut = str
+			}
+
+			strSlc, ok := val.([]interface{})
+			if ok {
+				for _, v := range strSlc {
+					if str, ok := v.(string); ok {
+						strOut += str + "\n"
+					}
+				}
+			}
+
+			if strOut == "" {
 				return missingTranslationValue(pathList)
 			}
-			return str
+
+			return strOut
 		}
 		current = val
 	}
