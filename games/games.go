@@ -97,6 +97,11 @@ func (s *Game) AddPlayer(player *Player, isHost bool) error {
 			player.MakeHost()
 		}
 
+		go func() {
+			<-player.ctx.Done()
+			_ = s.RemovePlayer(player.Name)
+		}()
+
 		s.players = append(s.players, player)
 		return nil
 	})

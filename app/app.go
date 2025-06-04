@@ -69,7 +69,7 @@ func TeaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 
 	languagePreference := language.LanguagePreference{Lang: config.Language}
 
-	player := games.NewPlayer(&languagePreference)
+	player := games.NewPlayer(s.Context(), &languagePreference)
 
 	m := Model{
 		board: board.NewModel(pty.Window.Width, pty.Window.Height, style, player),
