@@ -1,6 +1,8 @@
 package games
 
 import (
+	"context"
+
 	"github.com/ascii-arcade/game-template/generaterandom"
 	"github.com/ascii-arcade/game-template/language"
 )
@@ -14,14 +16,17 @@ type Player struct {
 
 	UpdateChan         chan struct{}
 	LanguagePreference *language.LanguagePreference
+
+	ctx context.Context
 }
 
-func NewPlayer(langPref *language.LanguagePreference) *Player {
+func NewPlayer(ctx context.Context, langPref *language.LanguagePreference) *Player {
 	return &Player{
 		Name:               generaterandom.Name(langPref.Lang),
 		Count:              0,
 		UpdateChan:         make(chan struct{}),
 		LanguagePreference: langPref,
+		ctx:                ctx,
 	}
 }
 

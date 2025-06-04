@@ -45,7 +45,7 @@ func (s *lobbyScreen) View() string {
 
 	footer := s.model.lang().Get("board", "waiting_for_start")
 	if s.model.Player.IsHost() {
-		footer = fmt.Sprintf(s.model.lang().Get("board", "press_to_start"), keys.MenuStartNewGame.String(s.style))
+		footer = fmt.Sprintf(s.model.lang().Get("board", "press_to_start"), keys.LobbyStartGame.String(s.style))
 
 		if err := s.model.Game.IsPlayerCountOk(); err != nil {
 			errorMessage := s.model.lang().Get("error", err.Error())
