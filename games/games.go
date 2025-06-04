@@ -8,7 +8,11 @@ import (
 	"slices"
 
 	"github.com/ascii-arcade/game-template/generaterandom"
-	"github.com/ascii-arcade/game-template/language"
+)
+
+var (
+	ErrGameInProgress = errors.New("game_already_in_progress")
+	ErrGameNotFound   = errors.New("game_not_found")
 )
 
 var games = make(map[string]*Game)
@@ -34,10 +38,10 @@ func New() *Game {
 func GetOpenGame(code string) (*Game, error) {
 	game, exists := games[code]
 	if !exists {
-		return nil, errors.New("game_not_found")
+		return nil, ErrGameNotFound
 	}
 	if game.inProgress {
-		return nil, errors.New("game_already_in_progress")
+		return nil, ErrGameInProgress
 	}
 
 	return game, nil
@@ -75,11 +79,10 @@ func (s *Game) withLock(fn func() error) error {
 	return fn()
 }
 
-func (s *Game) AddPlayer(isHost bool, lang *language.LanguagePreference) (*Player, error) {
-	var player *Player
-	err := s.withLock(func() error {
+func (s *Game) AddPlayer(player *Player, isHost bool) error {
+	return s.withLock(func() error {
 		if s.inProgress {
-			return errors.New("game_already_in_progress")
+			return ErrGameInProgress
 		}
 
 		maxTurnOrder := 0
@@ -88,16 +91,15 @@ func (s *Game) AddPlayer(isHost bool, lang *language.LanguagePreference) (*Playe
 				maxTurnOrder = p.TurnOrder
 			}
 		}
-		player = NewPlayer(lang).MakeHost()
+
+		player.SetTurnOrder(maxTurnOrder + 1)
+		if isHost {
+			player.MakeHost()
+		}
+
 		s.players = append(s.players, player)
 		return nil
 	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return player, nil
 }
 
 func (s *Game) RemovePlayer(playerName string) error {
