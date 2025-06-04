@@ -29,9 +29,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.active = msg.Model
 		initcmd := m.active.Init()
 		return m, initcmd
+
 	case messages.NewGame:
-		err := m.newGame()
-		if err == nil {
+		if err := m.newGame(); err == nil {
 			m.active = m.board
 			m.board.Init()
 		}
@@ -40,9 +40,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				Model: m.board,
 			}
 		}
+
 	case messages.JoinGame:
-		err := m.joinGame(msg.GameCode, false)
-		if err == nil {
+		if err := m.joinGame(msg.GameCode, false); err == nil {
 			m.active = m.board
 			m.board.Init()
 		}
@@ -62,14 +62,14 @@ func (m Model) View() string {
 	return m.active.View()
 }
 
-func TeaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
-	pty, _, _ := s.Pty()
-	renderer := bubbletea.MakeRenderer(s)
+func TeaHandler(sess ssh.Session) (tea.Model, []tea.ProgramOption) {
+	pty, _, _ := sess.Pty()
+	renderer := bubbletea.MakeRenderer(sess)
 	style := renderer.NewStyle()
 
 	languagePreference := language.LanguagePreference{Lang: config.Language}
 
-	player := games.NewPlayer(s.Context(), &languagePreference)
+	player := games.NewPlayer(sess.Context(), sess, &languagePreference)
 
 	m := Model{
 		board: board.NewModel(pty.Window.Width, pty.Window.Height, style, player),

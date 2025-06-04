@@ -3,8 +3,8 @@ package games
 import (
 	"context"
 
-	"github.com/ascii-arcade/game-template/generaterandom"
 	"github.com/ascii-arcade/game-template/language"
+	"github.com/charmbracelet/ssh"
 )
 
 type Player struct {
@@ -12,22 +12,14 @@ type Player struct {
 	Count     int
 	TurnOrder int
 
-	isHost bool
+	isHost    bool
+	connected bool
 
 	UpdateChan         chan struct{}
 	LanguagePreference *language.LanguagePreference
 
-	ctx context.Context
-}
-
-func NewPlayer(ctx context.Context, langPref *language.LanguagePreference) *Player {
-	return &Player{
-		Name:               generaterandom.Name(langPref.Lang),
-		Count:              0,
-		UpdateChan:         make(chan struct{}),
-		LanguagePreference: langPref,
-		ctx:                ctx,
-	}
+	sess ssh.Session
+	ctx  context.Context
 }
 
 func (p *Player) SetName(name string) *Player {
