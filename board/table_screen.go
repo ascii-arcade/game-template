@@ -28,6 +28,10 @@ func (s *tableScreen) WithModel(model any) screen.Screen {
 
 func (s *tableScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		s.model.height, s.model.width = msg.Height, msg.Width
+		return s.model, nil
+
 	case tea.KeyMsg:
 		if keys.GameIncrementPoint.TriggeredBy(msg.String()) {
 			_ = s.model.Game.Count(s.model.Player.Name)

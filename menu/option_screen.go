@@ -31,6 +31,10 @@ func (s *optionScreen) WithModel(model any) screen.Screen {
 
 func (s *optionScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		s.model.height, s.model.width = msg.Height, msg.Width
+		return s.model, nil
+
 	case tea.KeyMsg:
 		if keys.MenuEnglish.TriggeredBy(msg.String()) {
 			s.model.player.LanguagePreference.SetLanguage("EN")

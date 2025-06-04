@@ -12,8 +12,8 @@ import (
 )
 
 type Model struct {
-	Width  int
-	Height int
+	width  int
+	height int
 	screen screen.Screen
 	style  lipgloss.Style
 
@@ -23,8 +23,8 @@ type Model struct {
 
 func NewModel(width, height int, style lipgloss.Style, player *games.Player) Model {
 	m := Model{
-		Width:  width,
-		Height: height,
+		width:  width,
+		height: height,
 		style:  style,
 		Player: player,
 	}
@@ -43,9 +43,6 @@ func (m *Model) lang() *language.Language {
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.WindowSizeMsg:
-		m.Height, m.Width = msg.Height, msg.Width
-
 	case messages.RefreshBoard:
 		return m, waitForRefreshSignal(m.Player.UpdateChan)
 
@@ -60,10 +57,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	if m.Width < config.MinimumWidth {
+	if m.width < config.MinimumWidth {
 		return m.lang().Get("error", "window_too_narrow")
 	}
-	if m.Height < config.MinimumHeight {
+	if m.height < config.MinimumHeight {
 		return m.lang().Get("error", "window_too_short")
 	}
 

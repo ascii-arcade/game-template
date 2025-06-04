@@ -29,6 +29,10 @@ func (s *lobbyScreen) WithModel(model any) screen.Screen {
 
 func (s *lobbyScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		s.model.height, s.model.width = msg.Height, msg.Width
+		return s.model, nil
+
 	case tea.KeyMsg:
 		if keys.LobbyStartGame.TriggeredBy(msg.String()) {
 			if s.model.Player.IsHost() {
@@ -41,7 +45,7 @@ func (s *lobbyScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 }
 
 func (s *lobbyScreen) View() string {
-	style := s.style.Width(s.model.Width / 2)
+	style := s.style.Width(s.model.width / 2)
 
 	footer := s.model.lang().Get("board", "waiting_for_start")
 	if s.model.Player.IsHost() {
@@ -65,10 +69,10 @@ func (s *lobbyScreen) View() string {
 		style.Render(footer),
 	)
 
-	return s.style.Width(s.model.Width).Height(s.model.Height).Render(
+	return s.style.Width(s.model.width).Height(s.model.height).Render(
 		lipgloss.Place(
-			s.model.Width,
-			s.model.Height,
+			s.model.width,
+			s.model.height,
 			lipgloss.Center,
 			lipgloss.Center,
 			s.style.
