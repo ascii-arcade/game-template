@@ -6,11 +6,8 @@ import (
 )
 
 type (
-	// SwitchViewMsg    struct{ Model tea.Model }
 	SwitchToMenuMsg  struct{}
 	SwitchToBoardMsg struct{ Game *games.Game }
 	SwitchScreenMsg  struct{ Screen screen.Screen }
-	// NewGame          struct{}
-	// JoinGame         struct{ GameCode string }
-	RefreshBoard struct{}
+	RefreshBoard     struct{}
 )
