@@ -5,13 +5,6 @@
     "global": {
       "quit": "Presiona %s para salir del juego"
     },
-    "ssh": {
-      "server_version": "Versión: %s",
-      "starting_server": "Iniciando servidor SSH en %s:%s",
-      "stopping_server": "Deteniendo servidor SSH",
-      "could_not_start_server": "No se pudo iniciar el servidor",
-      "could_not_stop_server": "No se pudo detener el servidor"
-    },
     "error": {
       "player_not_found": "Jugador no encontrado",
       "too_many_players": "Demasiados jugadores",
