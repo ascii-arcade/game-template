@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net"
 	"os"
 	"os/signal"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/ascii-arcade/game-template/app"
 	"github.com/ascii-arcade/game-template/config"
+	"github.com/ascii-arcade/game-template/web"
 	"github.com/charmbracelet/log"
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish"
@@ -21,8 +21,11 @@ import (
 )
 
 func main() {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
 	s, err := wish.NewServer(
-		wish.WithAddress(net.JoinHostPort(config.Host, config.Port)),
+		wish.WithAddress(net.JoinHostPort(config.Host, config.SSHPort)),
 		wish.WithHostKeyPath(".ssh/id_ed25519"),
 		wish.WithMiddleware(
 			bubbletea.Middleware(app.TeaHandler),
@@ -31,26 +34,31 @@ func main() {
 		),
 	)
 	if err != nil {
-		log.Error(config.Language.Get("ssh", "could_not_start_server"), err)
+		log.Error("could not create wish server", "error", err)
 	}
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-	log.Info(fmt.Sprintf(config.Language.Get("ssh", "starting_server"), config.Host, config.Port))
-	log.Info(fmt.Sprintf(config.Language.Get("ssh", "server_version"), config.Version))
 
 	go func() {
+		log.Info("starting ssh server", "host", config.Host, "port", config.SSHPort, "version", config.Version)
 		if err = s.ListenAndServe(); err != nil && !errors.Is(err, ssh.ErrServerClosed) {
-			log.Error(config.Language.Get("ssh", "could_not_start_server"), err)
+			log.Error("could not start wish server", "error", err)
+			done <- nil
+		}
+	}()
+
+	go func() {
+		log.Info("starting http server", "host", config.Host, "port", config.HTTPPort, "version", config.Version)
+		if err := web.Run(); err != nil {
+			log.Error("could not start web server", "error", err)
 			done <- nil
 		}
 	}()
 
 	<-done
-	log.Info(config.Language.Get("ssh", "stopping_server"))
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
+	log.Info("shutting down servers...")
 	if err := s.Shutdown(ctx); err != nil && !errors.Is(err, ssh.ErrServerClosed) {
-		log.Error(config.Language.Get("ssh", "could_not_stop_server"), err)
+		log.Error("error shutting down servers", "error", err)
 	}
 }
