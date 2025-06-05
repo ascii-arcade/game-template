@@ -97,6 +97,14 @@ func (m *Model) joinGame(code string, isNew bool) error {
 		return err
 	}
 
+	m.board.Player.OnDisconnect(func() {
+		if game.InProgress() {
+			m.board.Player.connected = false
+		} else {
+			games.RemovePlayer(m.board.Player)
+		}
+	})
+
 	m.board.Game = game
 	return nil
 }

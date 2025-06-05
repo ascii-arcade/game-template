@@ -107,7 +107,7 @@ func (s *Game) DisconnectedPlayer() *Player {
 	var player *Player
 	_ = s.withLock(func() error {
 		for _, p := range s.players {
-			if !p.connected {
+			if !p.IsConnected {
 				player = p
 				break
 			}

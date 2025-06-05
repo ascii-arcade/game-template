@@ -14,10 +14,10 @@ func NewPlayer(ctx context.Context, sess ssh.Session, langPref *language.Languag
 	player, exists := players[sess.User()]
 	if exists {
 		player.UpdateChan = make(chan struct{})
-		player.connected = true
+		player.IsConnected = true
 		player.ctx = ctx
 
-		goto RETURN
+		return player
 	}
 
 	player = &Player{
@@ -26,7 +26,7 @@ func NewPlayer(ctx context.Context, sess ssh.Session, langPref *language.Languag
 		UpdateChan:         make(chan struct{}),
 		LanguagePreference: langPref,
 		Sess:               sess,
-		connected:          true,
+		IsConnected:        true,
 		ctx:                ctx,
 	}
 	players[sess.User()] = player
@@ -34,7 +34,7 @@ func NewPlayer(ctx context.Context, sess ssh.Session, langPref *language.Languag
 RETURN:
 	go func() {
 		<-player.ctx.Done()
-		player.connected = false
+		player.IsConnected = false
 	}()
 
 	return player
@@ -54,7 +54,7 @@ func GetPlayerCount() int {
 func GetConnectedPlayerCount() int {
 	count := 0
 	for _, player := range players {
-		if player.connected {
+		if player.IsConnected {
 			count++
 		}
 	}
