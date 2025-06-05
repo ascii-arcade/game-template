@@ -31,12 +31,6 @@ func NewPlayer(ctx context.Context, sess ssh.Session, langPref *language.Languag
 	}
 	players[sess.User()] = player
 
-RETURN:
-	go func() {
-		<-player.ctx.Done()
-		player.IsConnected = false
-	}()
-
 	return player
 }
 
