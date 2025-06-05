@@ -34,7 +34,7 @@ func (s *tableScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 
 	case tea.KeyMsg:
 		if keys.GameIncrementPoint.TriggeredBy(msg.String()) {
-			_ = s.model.Game.Count(s.model.Player.Name)
+			s.model.Game.Count(s.model.Player)
 		}
 	}
 
@@ -42,6 +42,17 @@ func (s *tableScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 }
 
 func (s *tableScreen) View() string {
+	disconnectedPlayer := s.model.Game.DisconnectedPlayer()
+	if disconnectedPlayer != nil {
+		return s.style.Render(
+			lipgloss.JoinVertical(
+				lipgloss.Center,
+				s.model.style.Align(lipgloss.Center).MarginBottom(2).Render(s.model.Game.Code),
+				fmt.Sprintf(s.model.lang().Get("board", "disconnected_player"), disconnectedPlayer.Name)) +
+				"\n\n" + s.style.Render(fmt.Sprintf(s.model.lang().Get("global", "quit"), keys.ExitApplication.String(s.style))),
+		)
+	}
+
 	counts := ""
 	for _, p := range s.model.Game.OrderedPlayers() {
 		counts += fmt.Sprintf("%s: %d\n", p.Name, p.Count)

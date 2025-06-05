@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"errors"
 	"strings"
 
 	"github.com/ascii-arcade/game-template/colors"
@@ -46,7 +47,14 @@ func (s *joinScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 		if keys.Submit.TriggeredBy(msg.String()) {
 			if len(s.model.gameCodeInput.Value()) == 7 {
 				code := strings.ToUpper(s.model.gameCodeInput.Value())
-				if _, err := games.GetOpenGame(code); err != nil {
+				game, err := games.GetOpenGame(code)
+				if err != nil {
+					if errors.Is(err, games.ErrGameInProgress) && game.HasPlayer(s.model.player) {
+						return s.model, func() tea.Msg {
+							return messages.JoinGame{GameCode: code}
+						}
+					}
+
 					s.model.setError(err.Error())
 					return s.model, nil
 				}
