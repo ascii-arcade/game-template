@@ -35,10 +35,7 @@ func NewPlayer(ctx context.Context, sess ssh.Session, langPref *language.Languag
 }
 
 func RemovePlayer(player *Player) {
-	if _, exists := players[player.Sess.User()]; exists {
-		close(player.UpdateChan)
-		delete(players, player.Sess.User())
-	}
+	delete(players, player.Sess.User())
 }
 
 func GetPlayerCount() int {

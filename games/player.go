@@ -25,6 +25,7 @@ type Player struct {
 func (p *Player) OnDisconnect(fn func()) {
 	go func() {
 		<-p.ctx.Done()
+		close(p.UpdateChan)
 		fn()
 	}()
 }

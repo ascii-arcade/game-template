@@ -78,7 +78,6 @@ func (s *Game) AddPlayer(player *Player, isHost bool) error {
 func (s *Game) RemovePlayer(player *Player) {
 	_ = s.withLock(func() error {
 		if player, exists := s.getPlayer(player.Sess); exists {
-			close(player.UpdateChan)
 			for i, p := range s.players {
 				if p.Sess.User() == player.Sess.User() {
 					s.players = slices.Delete(s.players, i, i+1)
