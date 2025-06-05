@@ -11,15 +11,16 @@ import (
 const (
 	MinimumHeight = 40
 	MinimumWidth  = 120
-
-	Host = "localhost"
-	Port = "23234"
 )
 
 var (
 	Language *language.Language = setDefaultLanguage()
 
-	Version string = "dev"
+	Version  string = "dev"
+	Debug    bool   = cmp.Or(os.Getenv("ASCII_ARCADE_DEBUG"), "false") == "true"
+	Host     string = cmp.Or(os.Getenv("ASCII_ARCADE_HOST"), "localhost")
+	SSHPort  string = cmp.Or(os.Getenv("ASCII_ARCADE_SSH_PORT"), "23234")
+	HTTPPort string = cmp.Or(os.Getenv("ASCII_ARCADE_HTTP_PORT"), "8080")
 )
 
 func setDefaultLanguage() *language.Language {

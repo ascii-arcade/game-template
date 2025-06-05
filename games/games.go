@@ -34,3 +34,7 @@ func GetOpenGame(code string) (*Game, error) {
 
 	return game, nil
 }
+
+func GetAll() map[string]*Game {
+	return games
+}
