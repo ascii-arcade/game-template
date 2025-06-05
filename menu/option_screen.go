@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/ascii-arcade/game-template/games"
 	"github.com/ascii-arcade/game-template/keys"
 	"github.com/ascii-arcade/game-template/language"
 	"github.com/ascii-arcade/game-template/messages"
@@ -43,7 +44,13 @@ func (s *optionScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 			s.model.player.LanguagePreference.SetLanguage("ES")
 		}
 		if keys.MenuStartNewGame.TriggeredBy(msg.String()) {
-			return s.model, func() tea.Msg { return messages.NewGame{} }
+			newGame := games.New()
+			if err := s.model.joinGame(newGame.Code, true); err != nil {
+				s.model.setError(err.Error())
+				return s.model, nil
+			}
+
+			return s.model, func() tea.Msg { return messages.SwitchToBoardMsg{Game: newGame} }
 		}
 		if keys.MenuJoinGame.TriggeredBy(msg.String()) {
 			return s.model, func() tea.Msg {

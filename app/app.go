@@ -1,8 +1,6 @@
 package app
 
 import (
-	"errors"
-
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish/bubbletea"
@@ -27,32 +25,16 @@ func (m Model) Init() tea.Cmd {
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case messages.SwitchViewMsg:
-		m.active = msg.Model
-		initcmd := m.active.Init()
+	case messages.SwitchToBoardMsg:
+		m.board.Game = msg.Game
+		m.active = m.board
+		initcmd := m.board.Init()
 		return m, initcmd
 
-	case messages.NewGame:
-		if err := m.newGame(); err == nil {
-			m.active = m.board
-			m.board.Init()
-		}
-		return m, func() tea.Msg {
-			return messages.SwitchViewMsg{
-				Model: m.board,
-			}
-		}
-
-	case messages.JoinGame:
-		if err := m.joinGame(msg.GameCode, false); err == nil {
-			m.active = m.board
-			m.board.Init()
-		}
-		return m, func() tea.Msg {
-			return messages.SwitchViewMsg{
-				Model: m.board,
-			}
-		}
+	case messages.SwitchToMenuMsg:
+		m.active = m.menu
+		initcmd := m.menu.Init()
+		return m, initcmd
 	}
 
 	var cmd tea.Cmd
@@ -80,23 +62,4 @@ func TeaHandler(sess ssh.Session) (tea.Model, []tea.ProgramOption) {
 	m.active = m.menu
 
 	return m, []tea.ProgramOption{tea.WithAltScreen()}
-}
-
-func (m *Model) newGame() error {
-	newGame := games.New()
-	m.board.Game = newGame
-	return m.joinGame(newGame.Code, true)
-}
-
-func (m *Model) joinGame(code string, isNew bool) error {
-	game, err := games.GetOpenGame(code)
-	if err != nil && !(errors.Is(err, games.ErrGameInProgress) && game.HasPlayer(m.board.Player)) {
-		return err
-	}
-	if err := game.AddPlayer(m.board.Player, isNew); err != nil {
-		return err
-	}
-
-	m.board.Game = game
-	return nil
 }

@@ -47,18 +47,21 @@ func (s *joinScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 		if keys.Submit.TriggeredBy(msg.String()) {
 			if len(s.model.gameCodeInput.Value()) == 7 {
 				code := strings.ToUpper(s.model.gameCodeInput.Value())
+
 				game, err := games.GetOpenGame(code)
 				if err != nil {
-					if errors.Is(err, games.ErrGameInProgress) && game.HasPlayer(s.model.player) {
-						return s.model, func() tea.Msg {
-							return messages.JoinGame{GameCode: code}
-						}
+					if !errors.Is(err, games.ErrGameInProgress) && !game.HasPlayer(s.model.player) {
+						s.model.setError(err.Error())
+						return s.model, nil
 					}
+				}
 
+				if err := s.model.joinGame(code, false); err != nil {
 					s.model.setError(err.Error())
 					return s.model, nil
 				}
-				return s.model, func() tea.Msg { return messages.JoinGame{GameCode: code} }
+
+				return s.model, func() tea.Msg { return messages.SwitchToBoardMsg{Game: game} }
 			}
 		}
 
