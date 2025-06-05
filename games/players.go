@@ -24,7 +24,7 @@ func NewPlayer(ctx context.Context, sess ssh.Session, langPref *language.Languag
 		Count:              0,
 		UpdateChan:         make(chan struct{}),
 		LanguagePreference: langPref,
-		sess:               sess,
+		Sess:               sess,
 		ctx:                ctx,
 	}
 	players[sess.User()] = player
@@ -39,9 +39,9 @@ RETURN:
 }
 
 func RemovePlayer(player *Player) {
-	if _, exists := players[player.sess.User()]; exists {
+	if _, exists := players[player.Sess.User()]; exists {
 		close(player.UpdateChan)
-		delete(players, player.sess.User())
+		delete(players, player.Sess.User())
 	}
 }
 

@@ -4,6 +4,8 @@ import (
 	"slices"
 	"sort"
 	"sync"
+
+	"github.com/charmbracelet/ssh"
 )
 
 type Game struct {
@@ -48,6 +50,10 @@ func (s *Game) withLock(fn func() error) error {
 
 func (s *Game) AddPlayer(player *Player, isHost bool) error {
 	return s.withLock(func() error {
+		if _, ok := s.getPlayer(player.Sess); ok {
+			return nil
+		}
+
 		if s.inProgress {
 			return ErrGameInProgress
 		}
@@ -69,31 +75,35 @@ func (s *Game) AddPlayer(player *Player, isHost bool) error {
 	})
 }
 
-func (s *Game) RemovePlayer(playerName string) {
+func (s *Game) RemovePlayer(player *Player) {
 	_ = s.withLock(func() error {
-		if player, exists := s.getPlayer(playerName); exists {
+		if player, exists := s.getPlayer(player.Sess); exists {
 			close(player.UpdateChan)
 			for i, p := range s.players {
-				if p.Name == playerName {
+				if p.Sess.User() == player.Sess.User() {
 					s.players = slices.Delete(s.players, i, i+1)
 					break
 				}
 			}
 
 			if len(s.players) == 0 {
-				delete(games, playerName)
+				delete(games, player.Sess.User())
 			}
 		}
 		return nil
 	})
 }
 
-func (s *Game) getPlayer(name string) (*Player, bool) {
-	for _, player := range s.players {
-		if player.Name == name {
-			return player, true
+func (s *Game) getPlayer(sess ssh.Session) (*Player, bool) {
+	var player *Player
+	_ = s.withLock(func() error {
+		for _, p := range s.players {
+			if p.Sess.User() == sess.User() {
+				player = p
+				break
+			}
 		}
-	}
-
-	return nil, false
+		return nil
+	})
+	return player, player != nil
 }

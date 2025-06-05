@@ -34,7 +34,7 @@ func (s *tableScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 
 	case tea.KeyMsg:
 		if keys.GameIncrementPoint.TriggeredBy(msg.String()) {
-			_ = s.model.Game.Count(s.model.Player.Name)
+			s.model.Game.Count(s.model.Player)
 		}
 	}
 

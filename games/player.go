@@ -18,7 +18,7 @@ type Player struct {
 	UpdateChan         chan struct{}
 	LanguagePreference *language.LanguagePreference
 
-	sess ssh.Session
+	Sess ssh.Session
 	ctx  context.Context
 }
 
