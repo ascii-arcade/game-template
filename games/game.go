@@ -95,15 +95,29 @@ func (s *Game) RemovePlayer(player *Player) {
 }
 
 func (s *Game) getPlayer(sess ssh.Session) (*Player, bool) {
+	for _, p := range s.players {
+		if p.Sess.User() == sess.User() {
+			return p, true
+		}
+	}
+	return nil, false
+}
+
+func (s *Game) DisconnectedPlayer() *Player {
 	var player *Player
 	_ = s.withLock(func() error {
 		for _, p := range s.players {
-			if p.Sess.User() == sess.User() {
+			if !p.connected {
 				player = p
 				break
 			}
 		}
 		return nil
 	})
-	return player, player != nil
+	return player
+}
+
+func (s *Game) HasPlayer(player *Player) bool {
+	_, exists := s.getPlayer(player.Sess)
+	return exists
 }

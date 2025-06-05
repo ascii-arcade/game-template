@@ -29,7 +29,7 @@ func GetOpenGame(code string) (*Game, error) {
 		return nil, ErrGameNotFound
 	}
 	if game.inProgress {
-		return nil, ErrGameInProgress
+		return game, ErrGameInProgress
 	}
 
 	return game, nil

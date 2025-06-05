@@ -33,7 +33,8 @@
       "press_to_start": "Press %s to start the game",
       "player_list_you": "you",
       "player_list_host": "host",
-      "you_are" : "You are %s"
+      "you_are" : "You are %s",
+      "disconnected_player": "%s has disconnected. Waiting for them to reconnect..."
     }
   },
   "username_first_words": [

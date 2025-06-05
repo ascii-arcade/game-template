@@ -15,6 +15,7 @@ func NewPlayer(ctx context.Context, sess ssh.Session, langPref *language.Languag
 	if exists {
 		player.UpdateChan = make(chan struct{})
 		player.connected = true
+		player.ctx = ctx
 
 		goto RETURN
 	}
@@ -25,6 +26,7 @@ func NewPlayer(ctx context.Context, sess ssh.Session, langPref *language.Languag
 		UpdateChan:         make(chan struct{}),
 		LanguagePreference: langPref,
 		Sess:               sess,
+		connected:          true,
 		ctx:                ctx,
 	}
 	players[sess.User()] = player

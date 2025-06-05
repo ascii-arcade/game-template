@@ -1,6 +1,8 @@
 package app
 
 import (
+	"errors"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish/bubbletea"
@@ -88,7 +90,7 @@ func (m *Model) newGame() error {
 
 func (m *Model) joinGame(code string, isNew bool) error {
 	game, err := games.GetOpenGame(code)
-	if err != nil {
+	if err != nil && !(errors.Is(err, games.ErrGameInProgress) && game.HasPlayer(m.board.Player)) {
 		return err
 	}
 	if err := game.AddPlayer(m.board.Player, isNew); err != nil {
