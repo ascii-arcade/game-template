@@ -2,6 +2,7 @@ package app
 
 import (
 	"errors"
+	"log"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/ssh"
@@ -96,6 +97,15 @@ func (m *Model) joinGame(code string, isNew bool) error {
 	if err := game.AddPlayer(m.board.Player, isNew); err != nil {
 		return err
 	}
+
+	m.board.Player.OnDisconnect(func() {
+		log.Println("Player disconnected:", m.board.Player.Name)
+		if game.InProgress() {
+			m.board.Player.IsConnected = false
+		} else {
+			games.RemovePlayer(m.board.Player)
+		}
+	})
 
 	m.board.Game = game
 	return nil

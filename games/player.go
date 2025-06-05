@@ -12,14 +12,22 @@ type Player struct {
 	Count     int
 	TurnOrder int
 
-	isHost    bool
-	connected bool
+	isHost      bool
+	IsConnected bool
 
 	UpdateChan         chan struct{}
 	LanguagePreference *language.LanguagePreference
 
 	Sess ssh.Session
 	ctx  context.Context
+}
+
+func (p *Player) OnDisconnect(fn func()) {
+	go func() {
+		<-p.ctx.Done()
+		close(p.UpdateChan)
+		fn()
+	}()
 }
 
 func (p *Player) SetName(name string) *Player {
