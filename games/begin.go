@@ -8,7 +8,7 @@ const (
 )
 
 func (s *Game) Begin() error {
-	return s.withLock(func() error {
+	return s.withErrLock(func() error {
 		if error := s.IsPlayerCountOk(); error != nil {
 			return error
 		}
