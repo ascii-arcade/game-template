@@ -19,7 +19,9 @@ type Player struct {
 	LanguagePreference *language.LanguagePreference
 
 	Sess ssh.Session
-	ctx  context.Context
+
+	onDisconnect []func()
+	ctx          context.Context
 }
 
 func (p *Player) SetName(name string) *Player {
@@ -39,6 +41,10 @@ func (p *Player) MakeHost() *Player {
 
 func (p *Player) IsHost() bool {
 	return p.isHost
+}
+
+func (p *Player) OnDisconnect(fn func()) {
+	p.onDisconnect = append(p.onDisconnect, fn)
 }
 
 func (p *Player) incrementCount() {
