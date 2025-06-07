@@ -35,6 +35,9 @@ RETURN:
 	go func() {
 		<-player.ctx.Done()
 		player.connected = false
+		for _, fn := range player.onDisconnect {
+			fn()
+		}
 	}()
 
 	return player

@@ -70,6 +70,12 @@ func (s *Game) AddPlayer(player *Player, isHost bool) error {
 			player.MakeHost()
 		}
 
+		player.OnDisconnect(func() {
+			if !s.inProgress {
+				s.RemovePlayer(player)
+			}
+		})
+
 		s.players = append(s.players, player)
 		return nil
 	})
@@ -86,8 +92,8 @@ func (s *Game) RemovePlayer(player *Player) {
 				}
 			}
 
-			if len(s.players) == 0 {
-				delete(games, player.Sess.User())
+			if s.GetPlayerCount(false) == 0 {
+				delete(games, s.Code)
 			}
 		}
 		return nil
@@ -103,21 +109,30 @@ func (s *Game) getPlayer(sess ssh.Session) (*Player, bool) {
 	return nil, false
 }
 
-func (s *Game) DisconnectedPlayer() *Player {
-	var player *Player
+func (s *Game) GetDisconnectedPlayers() []*Player {
+	var players []*Player
 	_ = s.withLock(func() error {
 		for _, p := range s.players {
 			if !p.connected {
-				player = p
-				break
+				players = append(players, p)
 			}
 		}
 		return nil
 	})
-	return player
+	return players
 }
 
 func (s *Game) HasPlayer(player *Player) bool {
 	_, exists := s.getPlayer(player.Sess)
 	return exists
+}
+
+func (s *Game) GetPlayerCount(includeDisconnected bool) int {
+	count := 0
+	for _, p := range s.players {
+		if includeDisconnected || p.connected {
+			count++
+		}
+	}
+	return count
 }
