@@ -66,15 +66,14 @@ func (s *joinScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 		}
 
 		s.model.clearError()
-		val := s.model.gameCodeInput.Value()
-		if len(val) == 3 && msg.Type == tea.KeyRunes && msg.Runes[0] != '-' {
-			val = val + "-"
-			s.model.gameCodeInput.SetValue(val)
+		s.model.gameCodeInput, cmd = s.model.gameCodeInput.Update(msg)
+		s.model.gameCodeInput.SetValue(strings.ToUpper(s.model.gameCodeInput.Value()))
+
+		if len(s.model.gameCodeInput.Value()) == 3 && !strings.Contains(s.model.gameCodeInput.Value(), "-") {
+			s.model.gameCodeInput.SetValue(s.model.gameCodeInput.Value() + "-")
 			s.model.gameCodeInput.CursorEnd()
 		}
 	}
-
-	s.model.gameCodeInput, cmd = s.model.gameCodeInput.Update(msg)
 	return s.model, cmd
 }
 
