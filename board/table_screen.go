@@ -37,6 +37,9 @@ func (s *tableScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 		if keys.GameIncrementPoint.TriggeredBy(msg.String()) {
 			s.model.Game.Count(s.model.Player)
 		}
+		if keys.GameEndTurn.TriggeredBy(msg.String()) {
+			s.model.Game.NextTurn()
+		}
 	}
 
 	return s.model, nil
