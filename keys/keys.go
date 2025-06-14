@@ -34,5 +34,6 @@ var (
 
 	ExitApplication    = Keys{"ctrl+c"}
 	GameIncrementPoint = Keys{"a"}
+	GameEndTurn        = Keys{"z"}
 	LobbyStartGame     = Keys{"s"}
 )
