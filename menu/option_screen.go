@@ -37,13 +37,12 @@ func (s *optionScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 		return s.model, nil
 
 	case tea.KeyMsg:
-		if keys.MenuEnglish.TriggeredBy(msg.String()) {
+		switch {
+		case keys.MenuEnglish.TriggeredBy(msg.String()):
 			s.model.player.LanguagePreference.SetLanguage("EN")
-		}
-		if keys.MenuSpanish.TriggeredBy(msg.String()) {
+		case keys.MenuSpanish.TriggeredBy(msg.String()):
 			s.model.player.LanguagePreference.SetLanguage("ES")
-		}
-		if keys.MenuStartNewGame.TriggeredBy(msg.String()) {
+		case keys.MenuStartNewGame.TriggeredBy(msg.String()):
 			newGame := games.New()
 			if err := s.model.joinGame(newGame.Code, true); err != nil {
 				s.model.setError(err.Error())
@@ -51,8 +50,7 @@ func (s *optionScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 			}
 
 			return s.model, func() tea.Msg { return messages.SwitchToBoardMsg{Game: newGame} }
-		}
-		if keys.MenuJoinGame.TriggeredBy(msg.String()) {
+		case keys.MenuJoinGame.TriggeredBy(msg.String()):
 			return s.model, func() tea.Msg {
 				return messages.SwitchScreenMsg{
 					Screen: s.model.newJoinScreen(),

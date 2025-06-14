@@ -34,7 +34,8 @@ func (s *lobbyScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 		return s.model, nil
 
 	case tea.KeyMsg:
-		if keys.LobbyStartGame.TriggeredBy(msg.String()) {
+		switch {
+		case keys.LobbyStartGame.TriggeredBy(msg.String()):
 			if s.model.Player.IsHost() {
 				_ = s.model.Game.Begin()
 			}
