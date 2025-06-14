@@ -11,9 +11,10 @@ import (
 type Game struct {
 	Code string
 
-	inProgress bool
-	mu         sync.Mutex
-	players    []*Player
+	currentTurnIndex int
+	inProgress       bool
+	mu               sync.Mutex
+	players          []*Player
 }
 
 func (s *Game) InProgress() bool {
