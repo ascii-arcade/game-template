@@ -2,10 +2,10 @@ package games
 
 func (s *Game) NextTurn() {
 	s.withLock(func() {
-		if len(s.players) > s.currentTurnIndex+1 {
-			s.currentTurnIndex++
+		if len(s.players) > s.CurrentTurnIndex+1 {
+			s.CurrentTurnIndex++
 		} else {
-			s.currentTurnIndex = 0
+			s.CurrentTurnIndex = 0
 		}
 	})
 }

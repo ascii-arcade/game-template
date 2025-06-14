@@ -11,7 +11,7 @@ import (
 type Game struct {
 	Code string
 
-	currentTurnIndex int
+	CurrentTurnIndex int
 	inProgress       bool
 	mu               sync.Mutex
 	players          []*Player
@@ -143,4 +143,8 @@ func (s *Game) GetPlayerCount(includeDisconnected bool) int {
 		}
 	}
 	return count
+}
+
+func (s *Game) GetCurrentPlayer() *Player {
+	return s.players[s.CurrentTurnIndex]
 }
