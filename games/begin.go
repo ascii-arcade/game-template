@@ -13,6 +13,7 @@ func (s *Game) Begin() error {
 			return error
 		}
 
+		s.CurrentTurnIndex = 0
 		s.inProgress = true
 		return nil
 	})
