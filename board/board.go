@@ -47,7 +47,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, waitForRefreshSignal(m.Player.UpdateChan)
 
 	case tea.KeyMsg:
-		if keys.ExitApplication.TriggeredBy(msg.String()) {
+		switch {
+		case keys.ExitApplication.TriggeredBy(msg.String()):
 			m.Game.RemovePlayer(m.Player)
 			return m, tea.Quit
 		}
