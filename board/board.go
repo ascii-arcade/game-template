@@ -17,7 +17,6 @@ import (
 type Model struct {
 	width  int
 	height int
-	screen screen.Screen
 	style  lipgloss.Style
 
 	Player *games.Player
@@ -32,7 +31,6 @@ func NewModel(width, height int, style lipgloss.Style, player *games.Player) Mod
 		Player: player,
 	}
 
-	m.screen = m.newTableScreen()
 	return m
 }
 
