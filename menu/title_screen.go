@@ -13,24 +13,24 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-type optionScreen struct {
+type titleScreen struct {
 	model *Model
 	style lipgloss.Style
 }
 
-func (m *Model) newOptionScreen() *optionScreen {
-	return &optionScreen{
+func (m *Model) newTitleScreen() *titleScreen {
+	return &titleScreen{
 		model: m,
 		style: m.style,
 	}
 }
 
-func (s *optionScreen) WithModel(model any) screen.Screen {
+func (s *titleScreen) WithModel(model any) screen.Screen {
 	s.model = model.(*Model)
 	return s
 }
 
-func (s *optionScreen) Update(msg tea.Msg) (any, tea.Cmd) {
+func (s *titleScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		s.model.height, s.model.width = msg.Height, msg.Width
@@ -62,7 +62,7 @@ func (s *optionScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	return s.model, nil
 }
 
-func (s *optionScreen) View() string {
+func (s *titleScreen) View() string {
 	var content strings.Builder
 	content.WriteString(s.model.lang().Get("menu", "welcome") + "\n\n")
 	content.WriteString(fmt.Sprintf(s.model.lang().Get("menu", "press_to_create"), keys.MenuStartNewGame.String(s.style)) + "\n")

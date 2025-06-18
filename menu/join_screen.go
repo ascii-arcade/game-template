@@ -41,7 +41,7 @@ func (s *joinScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 		case keys.PreviousScreen.TriggeredBy(msg.String()):
 			return s.model, func() tea.Msg {
 				return messages.SwitchScreenMsg{
-					Screen: s.model.newOptionScreen(),
+					Screen: s.model.newTitleScreen(),
 				}
 			}
 		case keys.Submit.TriggeredBy(msg.String()):
