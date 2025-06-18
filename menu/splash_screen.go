@@ -44,7 +44,7 @@ func (s *splashScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	case doneMsg:
 		return s.model, func() tea.Msg {
 			return messages.SwitchScreenMsg{
-				Screen: s.model.newOptionScreen(),
+				Screen: s.model.newTitleScreen(),
 			}
 		}
 	}
