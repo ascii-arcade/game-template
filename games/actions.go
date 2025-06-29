@@ -1,7 +1,7 @@
 package games
 
-func (s *Game) Count(player *Player) {
+func (s *Game) EarnPoint(player *Player) {
 	s.withLock(func() {
-		player.incrementCount()
+		player.incrementPoints()
 	})
 }

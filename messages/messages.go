@@ -6,4 +6,6 @@ type (
 
 const (
 	Refresh = iota
+	TableScreen
+	WinnerScreen
 )

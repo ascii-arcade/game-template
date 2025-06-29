@@ -61,7 +61,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
-	screenModel, cmd := m.activeScreen().Update(msg)
+	screenModel, cmd := m.screen.Update(msg)
 	return screenModel.(*Model), cmd
 }
 
@@ -89,15 +89,7 @@ func (m Model) View() string {
 		)
 	}
 
-	return m.activeScreen().View()
-}
-
-func (m *Model) activeScreen() screen.Screen {
-	if m.Game.InProgress() {
-		return m.newTableScreen()
-	} else {
-		return m.newLobbyScreen()
-	}
+	return m.screen.View()
 }
 
 func waitForRefreshSignal(ch chan int) tea.Cmd {
@@ -107,5 +99,11 @@ func waitForRefreshSignal(ch chan int) tea.Cmd {
 }
 
 func (m *Model) handlePlayerUpdate(msg int) (tea.Model, tea.Cmd) {
+	switch msg {
+	case messages.TableScreen:
+		m.screen = m.newTableScreen()
+	case messages.WinnerScreen:
+		m.screen = m.newWinnerScreen()
+	}
 	return m, waitForRefreshSignal(m.Player.UpdateChan)
 }

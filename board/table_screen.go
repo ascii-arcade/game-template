@@ -33,7 +33,7 @@ func (s *tableScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 
 		switch {
 		case keys.GameIncrementPoint.TriggeredBy(msg.String()):
-			s.model.Game.Count(s.model.Player)
+			s.model.Game.EarnPoint(s.model.Player)
 		case keys.GameEndTurn.TriggeredBy(msg.String()):
 			s.model.Game.NextTurn()
 		}
@@ -45,7 +45,7 @@ func (s *tableScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 func (s *tableScreen) View() string {
 	counts := ""
 	for _, p := range s.model.Game.OrderedPlayers() {
-		counts += fmt.Sprintf("%s: %d\n", p.Name, p.Count)
+		counts += fmt.Sprintf("%s: %d\n", p.Name, p.Points)
 	}
 
 	return s.style.Render(fmt.Sprintf(s.model.lang().Get("board", "you_are"), s.model.Player.Name)) +
