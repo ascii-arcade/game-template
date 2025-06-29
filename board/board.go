@@ -17,6 +17,7 @@ import (
 type Model struct {
 	width  int
 	height int
+	screen screen.Screen
 	style  lipgloss.Style
 
 	Player *games.Player
@@ -38,14 +39,19 @@ func (m Model) Init() tea.Cmd {
 	return waitForRefreshSignal(m.Player.UpdateChan)
 }
 
+func (m *Model) SetGame(game *games.Game) {
+	m.screen = m.newLobbyScreen()
+	m.Game = game
+}
+
 func (m *Model) lang() *language.Language {
 	return m.Player.LanguagePreference.Lang
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case messages.RefreshBoard:
-		return m, waitForRefreshSignal(m.Player.UpdateChan)
+	case messages.PlayerUpdate:
+		return m.handlePlayerUpdate(int(msg))
 
 	case tea.KeyMsg:
 		switch {
@@ -94,8 +100,12 @@ func (m *Model) activeScreen() screen.Screen {
 	}
 }
 
-func waitForRefreshSignal(ch chan struct{}) tea.Cmd {
+func waitForRefreshSignal(ch chan int) tea.Cmd {
 	return func() tea.Msg {
-		return messages.RefreshBoard(<-ch)
+		return messages.PlayerUpdate(<-ch)
 	}
+}
+
+func (m *Model) handlePlayerUpdate(msg int) (tea.Model, tea.Cmd) {
+	return m, waitForRefreshSignal(m.Player.UpdateChan)
 }

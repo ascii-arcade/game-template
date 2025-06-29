@@ -7,8 +7,6 @@ import (
 	"github.com/ascii-arcade/game-template/colors"
 	"github.com/ascii-arcade/game-template/games"
 	"github.com/ascii-arcade/game-template/keys"
-	"github.com/ascii-arcade/game-template/messages"
-	"github.com/ascii-arcade/game-template/screen"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -27,11 +25,6 @@ func (m *Model) newJoinScreen() *joinScreen {
 	}
 }
 
-func (s *joinScreen) WithModel(model any) screen.Screen {
-	s.model = model.(*Model)
-	return s
-}
-
 func (s *joinScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	var cmd tea.Cmd
 
@@ -39,11 +32,8 @@ func (s *joinScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case keys.PreviousScreen.TriggeredBy(msg.String()):
-			return s.model, func() tea.Msg {
-				return messages.SwitchScreenMsg{
-					Screen: s.model.newTitleScreen(),
-				}
-			}
+			s.model.screen = s.model.newTitleScreen()
+			return s.model, nil
 		case keys.Submit.TriggeredBy(msg.String()):
 			if len(s.model.gameCodeInput.Value()) == 7 {
 				code := strings.ToUpper(s.model.gameCodeInput.Value())
@@ -61,7 +51,7 @@ func (s *joinScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 					return s.model, nil
 				}
 
-				return s.model, func() tea.Msg { return messages.SwitchToBoardMsg{Game: game} }
+				return s.model, func() tea.Msg { return SwitchToBoardMsg{Game: game} }
 			}
 		}
 

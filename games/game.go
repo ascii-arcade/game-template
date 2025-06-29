@@ -5,6 +5,7 @@ import (
 	"sort"
 	"sync"
 
+	"github.com/ascii-arcade/game-template/messages"
 	"github.com/charmbracelet/ssh"
 )
 
@@ -33,10 +34,7 @@ func (s *Game) OrderedPlayers() []*Player {
 
 func (s *Game) refresh() {
 	for _, p := range s.players {
-		select {
-		case p.UpdateChan <- struct{}{}:
-		default:
-		}
+		p.update(messages.Refresh)
 	}
 }
 
