@@ -10,7 +10,6 @@ import (
 	"github.com/ascii-arcade/game-template/games"
 	"github.com/ascii-arcade/game-template/language"
 	"github.com/ascii-arcade/game-template/menu"
-	"github.com/ascii-arcade/game-template/messages"
 )
 
 type Model struct {
@@ -25,15 +24,10 @@ func (m Model) Init() tea.Cmd {
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case messages.SwitchToBoardMsg:
-		m.board.Game = msg.Game
+	case menu.SwitchToBoardMsg:
+		m.board.SetGame(msg.Game)
 		m.active = m.board
 		initcmd := m.board.Init()
-		return m, initcmd
-
-	case messages.SwitchToMenuMsg:
-		m.active = m.menu
-		initcmd := m.menu.Init()
 		return m, initcmd
 	}
 

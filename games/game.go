@@ -5,12 +5,14 @@ import (
 	"sort"
 	"sync"
 
+	"github.com/ascii-arcade/game-template/messages"
 	"github.com/charmbracelet/ssh"
 )
 
 type Game struct {
 	Code string
 
+	Settings         Settings
 	CurrentTurnIndex int
 	inProgress       bool
 	mu               sync.Mutex
@@ -33,10 +35,7 @@ func (s *Game) OrderedPlayers() []*Player {
 
 func (s *Game) refresh() {
 	for _, p := range s.players {
-		select {
-		case p.UpdateChan <- struct{}{}:
-		default:
-		}
+		p.update(messages.Refresh)
 	}
 }
 
@@ -145,4 +144,13 @@ func (s *Game) GetPlayerCount(includeDisconnected bool) int {
 
 func (s *Game) GetCurrentPlayer() *Player {
 	return s.players[s.CurrentTurnIndex]
+}
+
+func (s *Game) GetWinner() *Player {
+	for _, player := range s.players {
+		if player.Points >= s.Settings.EndPoints {
+			return player
+		}
+	}
+	return nil
 }

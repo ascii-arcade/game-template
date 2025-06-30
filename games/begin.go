@@ -1,6 +1,10 @@
 package games
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/ascii-arcade/game-template/messages"
+)
 
 const (
 	minimumPlayers = 2
@@ -15,6 +19,10 @@ func (s *Game) Begin() error {
 
 		s.CurrentTurnIndex = 0
 		s.inProgress = true
+
+		for _, p := range s.players {
+			p.update(messages.TableScreen)
+		}
 		return nil
 	})
 }

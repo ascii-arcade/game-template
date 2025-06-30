@@ -7,8 +7,6 @@ import (
 	"github.com/ascii-arcade/game-template/games"
 	"github.com/ascii-arcade/game-template/keys"
 	"github.com/ascii-arcade/game-template/language"
-	"github.com/ascii-arcade/game-template/messages"
-	"github.com/ascii-arcade/game-template/screen"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -23,11 +21,6 @@ func (m *Model) newTitleScreen() *titleScreen {
 		model: m,
 		style: m.style,
 	}
-}
-
-func (s *titleScreen) WithModel(model any) screen.Screen {
-	s.model = model.(*Model)
-	return s
 }
 
 func (s *titleScreen) Update(msg tea.Msg) (any, tea.Cmd) {
@@ -49,13 +42,10 @@ func (s *titleScreen) Update(msg tea.Msg) (any, tea.Cmd) {
 				return s.model, nil
 			}
 
-			return s.model, func() tea.Msg { return messages.SwitchToBoardMsg{Game: newGame} }
+			return s.model, func() tea.Msg { return SwitchToBoardMsg{Game: newGame} }
 		case keys.MenuJoinGame.TriggeredBy(msg.String()):
-			return s.model, func() tea.Msg {
-				return messages.SwitchScreenMsg{
-					Screen: s.model.newJoinScreen(),
-				}
-			}
+			s.model.screen = s.model.newJoinScreen()
+			return s.model, nil
 		}
 	}
 

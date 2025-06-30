@@ -9,13 +9,13 @@ import (
 
 type Player struct {
 	Name      string
-	Count     int
+	Points    int
 	TurnOrder int
 
 	isHost    bool
 	connected bool
 
-	UpdateChan         chan struct{}
+	UpdateChan         chan int
 	LanguagePreference *language.LanguagePreference
 
 	Sess ssh.Session
@@ -47,6 +47,13 @@ func (p *Player) OnDisconnect(fn func()) {
 	p.onDisconnect = append(p.onDisconnect, fn)
 }
 
-func (p *Player) incrementCount() {
-	p.Count++
+func (p *Player) incrementPoints() {
+	p.Points++
+}
+
+func (p *Player) update(code int) {
+	select {
+	case p.UpdateChan <- code:
+	default:
+	}
 }
